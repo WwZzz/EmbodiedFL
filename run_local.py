@@ -1,0 +1,54 @@
+from flgo.decorator import BasicDecorator
+import flgo
+import flgo.algorithm.fedavg as fedavg
+import flgo.experiment.logger.full_logger as fel
+import json
+import os
+
+class ClientFilter(BasicDecorator):
+    """
+    Preserving partial clients for the training process
+
+    Args:
+        preserved_idxs (list|int): the indices of clients to be preserved
+    """
+    def __init__(self, preserved_idxs):
+        if isinstance(preserved_idxs, int): preserved_idxs = [preserved_idxs]
+        self.preserved_idxs = sorted(preserved_idxs)
+        self.removed_clients = []
+        self.preserved_clients = []
+
+    def __call__(self, runner, *args, **kwargs):
+        clients = runner.clients
+        num_clients = len(clients)
+        all_clients = list(range(num_clients))
+        removed_idx = [k for k in all_clients if k not in self.preserved_idxs]
+        if len(removed_idx) > 0:
+            self.removed_clients = [runner.clients[eid] for eid in removed_idx]
+            self.preserved_clients = [runner.clients[cid] for cid in range(len(runner.clients)) if cid not in removed_idx]
+            runner.reset_clients(self.preserved_clients)
+        else:
+            self.removed_clients = []
+            self.preserved_clients = runner.clients
+        self.register_runner(runner)
+        return runner
+
+    def __str__(self):
+        return f"ClientFilter_{'_'.join([str(k) for k in self.preserved_idxs])}"
+
+# task = 'task/Panda_Lift_lowdim_bcrnn'
+# task = 'task/Panda_TwoArmTransport_lowdim_bcrnn'
+# task = 'task/Panda_PickPlaceCan_lowdim_bcrnn'
+# task = 'task/Panda_NutAssemblySquare_lowdim_bcrnn'
+# task = 'task/Panda_ToolHang_lowdim_bcrnn'
+# task = 'task/CE_SquareD0_lowdim_bcrnn'
+task = 'task/CE_ThreadingD0_lowdim_bcrnn'
+
+with open(os.path.join(task, 'data.json'), 'r') as f:
+    data = json.load(f)
+    num_clients = len(data['client_names'])
+
+for i in range(num_clients):
+    runner = flgo.init(task, fedavg, option={'gpu':0, 'num_rounds':50, 'drop_last': True,'batch_size':100,'lr_scheduler':0,'learning_rate_decay':0.998 ,'proportion':1.0, 'clip_grad':10, 'learning_rate':0.0001,'optimizer':'Adam','weight_decay':0.0, 'save_checkpoint':f'single_client_{i}'}, Logger=fel.FullLogger)
+    ClientFilter(preserved_idxs=[i])(runner)
+    runner.run()
