@@ -121,7 +121,7 @@ python run_local.py --task TASK_NAME
 ```shell
 python run_fl.py --task TASK_NAME --method ALGO_NAME
 ```
-# Evaluate
+## Evaluate
 To evaluate the task success rate for each trained model, please run the following script
 ```shell
 python scripts/evaluate.py --task TASK_NAME --env_name ENV_NAME --robot ROBOT_NAME --ckpt CHECKPOINT_PATH
@@ -149,7 +149,7 @@ mv libstdc++.so.6 libstdc++.so.6.bak
 ln -s /usr/lib/x86_64-linux-gnu/libstdc++.so.6 ./libstdc++.so.6
 ```
 
-# Acknowledgement
+## Acknowledgement
 This repo is based on the open-source repos below. We are grateful to the contributions of these authors
 - [Robosuite](https://robosuite.ai/)
 - [Robomimic](https://robomimic.github.io/)
