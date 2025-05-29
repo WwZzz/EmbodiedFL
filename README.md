@@ -5,7 +5,7 @@
 
 </div>
 
-This repo implement several robot arm manipulation tasks in simulation in a federated manner. It supports several common cases including homogeneous-embodiment collaboration, cross-embodiment collaboration across different tasks and data collectors.
+This repo is developed for investigating the potential of training embodied models in a federated manner. It supports several common embodied settings, including homogeneous-embodiment collaboration, cross-embodiment collaboration across various tasks and data collectors.
 
 ## Installation
 - **pytorch**:
