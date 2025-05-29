@@ -74,7 +74,7 @@ cd data/robomimic
 huggingface-cli download --repo-type dataset amandlek/robomimic --local-dir .
 mv v1.5/* ./
 ```
-### (Optional) Generate Image Modality
+#### (Optional) Generate Image Modality
 The original datasets only contains the low_dim data that can be used in an out-of-the-box way. You need to extract the image modality manually by the command below. This operation may take several hours.
 ```shell
 # This is an example of converting lift-mg.
