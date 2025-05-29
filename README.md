@@ -35,7 +35,7 @@ pip install mujoco==2.3.2 mujoco-python-viewer
 
 ```
 ### TroubleShooting
-If the code raises the error like `You appear to be missing MuJoCo. We expected to find the file here: path/to/mujoco210`, you can try to replace the line `except ImportError:` with `except:` of the file `robomimic\robomimic\envs\env_robosuite.py` when the code tries to import `mujoco_py`. 
+If the code raises the error like `You appear to be missing MuJoCo. We expected to find the file here: path/to/mujoco210`, you can try to replace the line:35 `except ImportError:` with `except:` in the file `robomimic\robomimic\envs\env_robosuite.py` where the code tries to import `mujoco_py`. 
 
 ## Characteristic
 | Task Name | Cross-Collector                         | Cross-Embodiment          | Scale  | 
@@ -74,7 +74,13 @@ cd data/robomimic
 huggingface-cli download --repo-type dataset amandlek/robomimic --local-dir .
 mv v1.5/* ./
 ```
-
+### (Optional) Generate Image Modality
+The original datasets only contains the low_dim data that can be used in an out-of-the-box way. You need to extract the image modality manually by the command below. This operation may take several hours.
+```shell
+# This is an example of converting lift-mg.
+python scripts/dataset_states_to_obs.py --done_mode 0 --dataset data/robomimic/lift/mg/demo_v15.hdf5 --output_name image_sparse_v15.hdf5 --camera_names agentview robot0_eye_in_hand --camera_height 84 --camera_width 84
+```
+Please refer to [link](https://github.com/ARISE-Initiative/robomimic/blob/master/robomimic/scripts/extract_obs_from_raw_datasets.sh) for other cases.
 ### MimicGen
 Download the dataset from the huggingface [link](https://huggingface.co/datasets/amandlek/mimicgen_datasets). The architecture should be organized as:
 ```
