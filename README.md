@@ -79,6 +79,13 @@ data
 ...
 ```
 
+### Preprocessing Data
+After downloading the datasets and organizing them, you need to manually partition some hdf5 for further usages by flgo (i.e., specifying train\val split or client-level split). To do this, please run
+```shell
+python scripts/group_hf_dataset.py --file data/robomimic/tool_hang/ph/low_dim_v15.hdf5 --val 0.1 --num_groups 20
+python scripts/group_hf_dataset.py --file data/mimicgen/robot/*.hdf5 --val 0.1 # replace * with file names 
+```
+
 ## Run
 ### Local Only
 
