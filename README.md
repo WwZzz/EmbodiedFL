@@ -15,12 +15,24 @@ Please intall pytorch following the guidence in the pytorch's offsite [link](htt
 ```shell
 pip install flgo
 pip install robosuite==1.5.1
-pip install robomimic==0.4.0
+# install robomimic
+git clone https://github.com/ARISE-Initiative/robomimic.git
+cd robomimic
+pip install -e .
+cd ..
 # install mimicgen
 git clone https://github.com/NVlabs/mimicgen.git 
 cd mimicgen
 pip install -e .
+cd ..
+# install robosuite-task-zoo
+git clone https://github.com/ARISE-Initiative/robosuite-task-zoo.git
+cd robosuite-task-zoo
+pip install -e .
+cd ..
+# downgrade mujoco to previous version
 pip install mujoco==2.3.2
+
 ```
 
 ## Characteristic
