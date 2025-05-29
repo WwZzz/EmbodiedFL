@@ -26,7 +26,7 @@ parser.add_argument('--render', help='if render', action='store_true', default=F
 parser.add_argument('--render_offscreen', help='if render offscreen', action='store_true', default=False)
 parser.add_argument('--output_dir', help='the dir of the output path', type=str, default='')
 parser.add_argument('--eval_interval', help='the interval of checkpoints to be evaluated', type=int, default=5)
-parser.add_argument('--max_check_times', help='the max times of evaluation', type=int, default=10)
+parser.add_argument('--max_eval_times', help='the max times of evaluation', type=int, default=10)
 parser.add_argument('--personalize', help='whether to use local models',action='store_true', default=False)
 args = parser.parse_args()
 
@@ -58,7 +58,6 @@ if __name__ == "__main__":
     )
     if not os.path.isdir(args.ckpt):
         server = flgo.init(task, fedavg, option={'gpu': args.gpu, 'load_checkpoint': args.ckpt, })
-        server =flgo.init(task, fedavg, option={'gpu':args.gpu, 'load_checkpoint':args.ckpt,})
         server._load_checkpoint()
         model = server.model
         model.eval()
@@ -83,8 +82,12 @@ if __name__ == "__main__":
     else:
         all_ckpts = sorted(os.listdir(args.ckpt), key=lambda x: int(x.split('.')[-1]))
         all_ckpts = [os.path.join(args.ckpt, f) for f in all_ckpts]
+        if args.eval_interval>1:
+            idxs = np.arange(0, len(all_ckpts), args.eval_interval)
+            all_ckpts = [all_ckpts[idx] for idx in idxs]
         server =flgo.init(task, fedavg, option={'gpu':args.gpu, 'load_checkpoint':args.ckpt,})
         all_results = []
+        eval_times = 0
         for ckpt in tqdm(all_ckpts):
             server.option['load_checkpoint'] = ckpt
             server._load_checkpoint()
@@ -95,22 +98,26 @@ if __name__ == "__main__":
                 for _ in tqdm(range(args.num_episodes)):
                     result = run_rollout(model.model, env, render=args.render, horizon=args.horizon)
                     ckpt_results.append(result)
-            crt_results = process_results(all_results)
+            crt_results = process_results(ckpt_results)
             crt_results['task'] = args.task
             crt_results['env_name'] = env_name
             crt_results['num_episodes'] = args.num_episodes
             crt_results['horizon'] = args.horizon
             crt_results['ckpt'] = ckpt
             crt_results['round'] = os.path.split(ckpt)[-1].split('.')[-1]
-            all_results.append(ckpt_results)
+            all_results.append(crt_results)
+            eval_times += 1
+            if eval_times >= args.max_eval_times:
+                break
         all_success_rate = [cres['success_rate'] for cres in all_results]
         max_success_rate = max(all_success_rate)
-        print(f"Max Success Rate:{max_success_rate}")
+        optimal_round = all_results[np.argmax(all_success_rate)]['round']
+        print(f"Max Success Rate:{max_success_rate} at Round {optimal_round}")
         if args.output_dir!='':
-            res_name = os.path.join(args.output_dir, f"{args.task}_{args.num_episodes}_{args.horizon}_{args.ckpt.split(os.sep)[-2]}_all.json")
+            res_name = os.path.join(args.output_dir, f"{args.task}_{args.num_episodes}_{args.horizon}_{args.ckpt.split(os.sep)[-2]}_all_{args.eval_interval}_{args.max_eval_times}.json")
             if os.path.exists(res_name):
-                s = input("Enter to Overwrite, and else to break down")
-                if s=='\n':
+                s = input("Record already exists. Enter 'y' to overwrite, and any else to break down")
+                if s.strip().lower()=='y':
                     with open(res_name, 'w') as f:
                         json.dump(all_results, f)
                 else:
