@@ -75,7 +75,7 @@ huggingface-cli download --repo-type dataset amandlek/robomimic --local-dir .
 mv v1.5/* ./
 ```
 #### (Optional) Generate Image Modality
-The original datasets only contains the low_dim data that can be used in an out-of-the-box way. You need to extract the image modality manually by the command below. This operation may take several hours.
+Please complete this step before you want to run any tasks with image observations. The original datasets only contains the low_dim data that can be used in an out-of-the-box way. You need to extract the image modality manually by the command below. This operation may take several hours.
 ```shell
 # This is an example of converting lift-mg.
 python scripts/dataset_states_to_obs.py --done_mode 0 --dataset data/robomimic/lift/mg/demo_v15.hdf5 --output_name image_sparse_v15.hdf5 --camera_names agentview robot0_eye_in_hand --camera_height 84 --camera_width 84
