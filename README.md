@@ -80,7 +80,11 @@ Please complete this step before you want to run any tasks with image observatio
 # This is an example of converting lift-mg.
 python scripts/dataset_states_to_obs.py --done_mode 0 --dataset data/robomimic/lift/mg/demo_v15.hdf5 --output_name image_sparse_v15.hdf5 --camera_names agentview robot0_eye_in_hand --camera_height 84 --camera_width 84
 ```
-Please refer to [link](https://github.com/ARISE-Initiative/robomimic/blob/master/robomimic/scripts/extract_obs_from_raw_datasets.sh) for other cases.
+To generate images for all robomimic datasets, please run the command below
+```shell
+cd scripts
+./extract_obs_from_raw_datasets.sh
+```
 ### MimicGen
 Download the dataset from the huggingface [link](https://huggingface.co/datasets/amandlek/mimicgen_datasets). The architecture should be organized as:
 ```
