@@ -127,7 +127,7 @@ To evaluate the task success rate for each trained model, please run the followi
 python scripts/evaluate.py --task TASK_NAME --env_name ENV_NAME --robot ROBOT_NAME --ckpt CHECKPOINT_PATH
 ```
 
-### TroubleShooting
+## TroubleShooting
 - **Issues on mujoco_py**
 If the code raises the error like `You appear to be missing MuJoCo. We expected to find the file here: path/to/mujoco210`, you can try to replace the line:35 `except ImportError:` with `except:` in the file `robomimic\robomimic\envs\env_robosuite.py` where the code tries to import `mujoco_py`. 
 - **Cmake**
