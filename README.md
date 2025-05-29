@@ -5,7 +5,11 @@
 
 </div>
 
-This repo is developed for investigating the potential of training embodied models in a federated manner. It supports several common embodied settings, including homogeneous-embodiment collaboration, cross-embodiment collaboration across various tasks and data collectors.
+This repo is developed for investigating the potential of training embodied models in a federated manner. It supports several common embodied settings, including homogeneous-embodiment collaboration, cross-embodiment collaboration across various tasks and data collectors. One can use this repo to
+- benchmark embodied models in a distributed setting in simulation
+- develop advanced algorithms for embodied FL
+- verify the feasibility of federated collaboration for various embodied tasks
+- ...
 
 ## Installation
 - **pytorch**:
