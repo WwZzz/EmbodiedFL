@@ -9,9 +9,9 @@ This repo implement several robot arm manipulation tasks in simulation in a fede
 
 ## Installation
 - **pytorch**:
-Please install pytorch following the guidance in the pytorch's offsite [link](https://pytorch.org)
+please install pytorch following the guidance in the pytorch's offsite [link](https://pytorch.org)
 
-- **Other**:
+- **other**:
 ```shell
 pip install flgo
 pip install robosuite==1.5.1
