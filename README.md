@@ -8,10 +8,10 @@
 This repo implement several robot arm manipulation tasks in simulation in a federated manner. It supports several common cases including homogeneous-embodiment collaboration, cross-embodiment collaboration across different tasks and data collectors.
 
 ## Installation
-- pytorch
+- **pytorch**:
 Please intall pytorch following the guidence in the pytorch's offsite [link](https://pytorch.org)
 
-- Other
+- **Other**:
 ```shell
 pip install flgo
 pip install robosuite==1.5.1
