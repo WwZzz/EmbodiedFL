@@ -35,7 +35,13 @@ pip install mujoco==2.3.2 mujoco-python-viewer
 
 ```
 ### TroubleShooting
+- **Issues on mujoco_py**
 If the code raises the error like `You appear to be missing MuJoCo. We expected to find the file here: path/to/mujoco210`, you can try to replace the line:35 `except ImportError:` with `except:` in the file `robomimic\robomimic\envs\env_robosuite.py` where the code tries to import `mujoco_py`. 
+- **Cmake**
+If the installation failed due to error like `Compatibility with CMake < 3.5 has been removed from CMake. Update the VERSION argument <min> value.`, please set the configurations as
+```shell
+export CMAKE_POLICY_VERSION_MINIMUM = X.X # X.X should be replaced by the version of cmake that can be found by `cmake --version`
+```
 
 ## Characteristic
 | Task Name | Cross-Collector                         | Cross-Embodiment          | Scale  | 
