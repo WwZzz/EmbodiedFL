@@ -10,6 +10,7 @@ import robomimic.utils.loss_utils as LossUtils
 import robomimic.models.base_nets as BaseNets
 from torch.optim import Adam
 import torch
+import os
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'data', 'robomimic')
