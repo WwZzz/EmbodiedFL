@@ -1,7 +1,7 @@
 
 <div align="center">
   <img src='assets/logo.png'  width="200"/>
-<h1>Federated Embodied Learning</h1>
+<h1>Embodied Federated Learning</h1>
 
 </div>
 
