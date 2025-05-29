@@ -250,6 +250,7 @@ class Model(nn.Module):
                 and np.array values for each key)
         """
         for k in obs:
+            if k not in self.obs_key_shape: continue
             dim = self.obs_key_shapes[k] if not isinstance(self.obs_key_shapes[k], list) else np.prod(np.array(self.obs_key_shapes[k]))
             if obs[k].shape[0]<dim:
                 obs[k] = np.concatenate([obs[k], np.zeros(dim-obs[k].shape[0])])
