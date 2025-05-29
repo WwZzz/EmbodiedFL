@@ -65,6 +65,12 @@ data
 │        └─ demo_v15.hdf5   
 ...
 ```
+One can use the following command to download the dataset
+```shell
+pip install huggingface
+cd data/robomimic
+huggingface-cli download --repo-type dataset amandlek/robomimic --local-dir .
+```
 
 ### MimicGen
 Download the dataset from the huggingface [link](https://huggingface.co/datasets/amandlek/mimicgen_datasets). The architecture should be organized as:
@@ -77,6 +83,12 @@ data
 │     ├─ square_d0_iiwa.hdf5                     
 │     ...         
 ...
+```
+One can use the following command to download the dataset
+```shell
+pip install huggingface
+cd data/robomimic
+huggingface-cli download --repo-type dataset amandlek/mimicgen_datasets --local-dir .
 ```
 
 ### Preprocessing Data
