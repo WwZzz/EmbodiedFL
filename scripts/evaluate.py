@@ -114,7 +114,7 @@ if __name__ == "__main__":
         optimal_round = all_results[np.argmax(all_success_rate)]['round']
         print(f"Max Success Rate:{max_success_rate} at Round {optimal_round}")
         if args.output_dir!='':
-            res_name = os.path.join(args.output_dir, f"{args.task}_{args.num_episodes}_{args.horizon}_{args.ckpt.split(os.sep)[-2]}_all_{args.eval_interval}_{args.max_eval_times}.json")
+            res_name = os.path.join(args.output_dir, f"{args.task}_{args.num_episodes}_{args.horizon}_{args.ckpt.split(os.sep)[-1]}_all_{args.eval_interval}_{args.max_eval_times}.json")
             if os.path.exists(res_name):
                 s = input("Record already exists. Enter 'y' to overwrite, and any else to break down")
                 if s.strip().lower()=='y':
