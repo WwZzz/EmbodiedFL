@@ -1,3 +1,4 @@
+import argparse
 from flgo.decorator import BasicDecorator
 import flgo
 import flgo.algorithm.fedavg as fedavg
@@ -42,13 +43,35 @@ class ClientFilter(BasicDecorator):
 # task = 'task/Panda_NutAssemblySquare_lowdim_bcrnn'
 # task = 'task/Panda_ToolHang_lowdim_bcrnn'
 # task = 'task/CE_SquareD0_lowdim_bcrnn'
-task = 'task/CE_ThreadingD0_lowdim_bcrnn'
+# task = 'task/CE_ThreadingD0_lowdim_bcrnn'
 
-with open(os.path.join(task, 'data.json'), 'r') as f:
-    data = json.load(f)
-    num_clients = len(data['client_names'])
-
-for i in range(num_clients):
-    runner = flgo.init(task, fedavg, option={'gpu':0, 'num_rounds':50, 'drop_last': True,'batch_size':100,'lr_scheduler':0,'learning_rate_decay':0.998 ,'proportion':1.0, 'clip_grad':10, 'learning_rate':0.0001,'optimizer':'Adam','weight_decay':0.0, 'save_checkpoint':f'single_client_{i}'}, Logger=fel.FullLogger)
-    ClientFilter(preserved_idxs=[i])(runner)
-    runner.run()
+parser = argparse.ArgumentParser()
+parser.add_argument('--task', help='the task name', type=str, default='tmp_task')
+parser.add_argument('--method', help='the method name', type=str, default='')
+parser.add_argument('--gpu', help='the id of gpu', type=int, default=0)
+args = parser.parse_args()
+config = {
+    'gpu':0,
+    'num_rounds':50,
+    'num_epochs': 1,
+    'drop_last': True,
+    'batch_size':100,
+    'lr_scheduler':0,
+    'learning_rate_decay':0.998 ,
+    'proportion':1.0,
+    'clip_grad':10,
+    'learning_rate':0.0001,
+    'optimizer':'Adam',
+    'weight_decay':0.0,
+}
+if __name__ == '__main__':
+    task = os.path.join('task', args.task)
+    with open(os.path.join(task, 'data.json'), 'r') as f:
+        data = json.load(f)
+        num_clients = len(data['client_names'])
+    for i in range(num_clients):
+        config_i = config.copy()
+        config_i['save_checkpoint'] = f'single_client_{i}'
+        runner = flgo.init(task, fedavg, option=config_i, Logger=fel.FullLogger)
+        ClientFilter(preserved_idxs=[i])(runner)
+        runner.run()

@@ -10,14 +10,22 @@ import argparse
 # task = 'task/Panda_TwoArmTransport_lowdim_bcrnn'
 # task = 'task/Panda_PickPlaceCan_lowdim_bcrnn'
 # task = 'task/Panda_NutAssemblySquare_lowdim_bcrnn'
-task = 'task/Panda_ToolHang_lowdim_bcrnn'
+# task = 'task/Panda_ToolHang_lowdim_bcrnn'
 # task = 'task/CE_SquareD0_lowdim_bcrnn'
 # task = 'task/CE_ThreadingD0_lowdim_bcrnn'
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--task', help='the task name', type=str, default='tmp_task')
+parser.add_argument('--method', help='the method name', type=str, default='')
+parser.add_argument('--gpu', help='the id of gpu', type=int, default=0)
+args = parser.parse_args()
+
 if __name__=='__main__':
+    task = os.path.join('task', args.task)
     config = {
-        'gpu':0,
+        'gpu':args.gpu,
         'num_rounds':50,
+        'num_epochs': 1,
         'drop_last': True,
         'batch_size':100,
         'lr_scheduler':0,
