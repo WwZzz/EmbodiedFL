@@ -34,27 +34,7 @@ cd ..
 pip install mujoco==2.3.2 mujoco-python-viewer
 
 ```
-### TroubleShooting
-- **Issues on mujoco_py**
-If the code raises the error like `You appear to be missing MuJoCo. We expected to find the file here: path/to/mujoco210`, you can try to replace the line:35 `except ImportError:` with `except:` in the file `robomimic\robomimic\envs\env_robosuite.py` where the code tries to import `mujoco_py`. 
-- **Cmake**
-If the installation failed due to error like `Compatibility with CMake < 3.5 has been removed from CMake. Update the VERSION argument <min> value.`, please set the configurations as
-```shell
-export CMAKE_POLICY_VERSION_MINIMUM = X.X # X.X should be replaced by the version of cmake that can be found by `cmake --version`
-```
-- **Issues on EGL**
-If the code raises the error `failed to open swrast: /usr/lib/dri/swrast_dri.so:`, please link the file into the target path
-```shell
-cd /usr/lib
-ln -s /usr/lib/x86_64-linux-gnu/dri ./dri
-```
 
-If the code raises the error of `libstdc++.so.6`, please replace this file in the env's lib with the one from `/usr/lib/x86_64-linux-gnu/`
-```shell
-cd ENV_LIB_PATH # replaced by the lib path of your python interpreter environment, e.g., anaconda3/envs/ENV_NAME/lib
-mv libstdc++.so.6 libstdc++.so.6.bak
-ln -s /usr/lib/x86_64-linux-gnu/libstdc++.so.6 ./libstdc++.so.6
-```
 
 ## Characteristic
 | Task Name | Cross-Collector                         | Cross-Embodiment          | Scale  | 
@@ -145,6 +125,28 @@ python run_fl.py --task TASK_NAME --method ALGO_NAME
 To evaluate the task success rate for each trained model, please run the following script
 ```shell
 python scripts/evaluate.py --task TASK_NAME --env_name ENV_NAME --robot ROBOT_NAME --ckpt CHECKPOINT_PATH
+```
+
+### TroubleShooting
+- **Issues on mujoco_py**
+If the code raises the error like `You appear to be missing MuJoCo. We expected to find the file here: path/to/mujoco210`, you can try to replace the line:35 `except ImportError:` with `except:` in the file `robomimic\robomimic\envs\env_robosuite.py` where the code tries to import `mujoco_py`. 
+- **Cmake**
+If the installation failed due to error like `Compatibility with CMake < 3.5 has been removed from CMake. Update the VERSION argument <min> value.`, please set the configurations as
+```shell
+export CMAKE_POLICY_VERSION_MINIMUM = X.X # X.X should be replaced by the version of cmake that can be found by `cmake --version`
+```
+- **Issues on EGL**
+If the code raises the error `failed to open swrast: /usr/lib/dri/swrast_dri.so:`, please link the file into the target path
+```shell
+cd /usr/lib
+ln -s /usr/lib/x86_64-linux-gnu/dri ./dri
+```
+
+If the code raises the error of `libstdc++.so.6`, please replace this file in the env's lib with the one from `/usr/lib/x86_64-linux-gnu/`
+```shell
+cd ENV_LIB_PATH # replaced by the lib path of your python interpreter environment, e.g., anaconda3/envs/ENV_NAME/lib
+mv libstdc++.so.6 libstdc++.so.6.bak
+ln -s /usr/lib/x86_64-linux-gnu/libstdc++.so.6 ./libstdc++.so.6
 ```
 
 # Acknowledgement
