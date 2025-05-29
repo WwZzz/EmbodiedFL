@@ -9,7 +9,7 @@ This repo implement several robot arm manipulation tasks in simulation in a fede
 
 ## Installation
 - **pytorch**:
-Please intall pytorch following the guidence in the pytorch's offsite [link](https://pytorch.org)
+Please install pytorch following the guidance in the pytorch's offsite [link](https://pytorch.org)
 
 - **Other**:
 ```shell
