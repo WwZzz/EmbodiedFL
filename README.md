@@ -70,6 +70,7 @@ One can use the following command to download the dataset
 pip install huggingface
 cd data/robomimic
 huggingface-cli download --repo-type dataset amandlek/robomimic --local-dir .
+mv v1.5/* ./
 ```
 
 ### MimicGen
@@ -87,7 +88,7 @@ data
 One can use the following command to download the dataset
 ```shell
 pip install huggingface
-cd data/robomimic
+cd data/mimicgen
 huggingface-cli download --repo-type dataset amandlek/mimicgen_datasets --local-dir .
 ```
 
