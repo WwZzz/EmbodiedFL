@@ -42,6 +42,19 @@ If the installation failed due to error like `Compatibility with CMake < 3.5 has
 ```shell
 export CMAKE_POLICY_VERSION_MINIMUM = X.X # X.X should be replaced by the version of cmake that can be found by `cmake --version`
 ```
+- **Issues on EGL**
+If the code raises the error `failed to open swrast: /usr/lib/dri/swrast_dri.so:`, please link the file into the target path
+```shell
+cd /usr/lib
+ln -s /usr/lib/x86_64-linux-gnu/dri ./dri
+```
+
+If the code raises the error of `libstdc++.so.6`, please replace this file in the env's lib with the one from `/usr/lib/x86_64-linux-gnu/`
+```shell
+cd ENV_LIB_PATH # replaced by the lib path of your python interpreter environment, e.g., anaconda3/envs/ENV_NAME/lib
+mv libstdc++.so.6 libstdc++.so.6.bak
+ln -s /usr/lib/x86_64-linux-gnu/libstdc++.so.6 ./libstdc++.so.6
+```
 
 ## Characteristic
 | Task Name | Cross-Collector                         | Cross-Embodiment          | Scale  | 
