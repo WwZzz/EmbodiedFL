@@ -117,7 +117,7 @@ python scripts/evaluate.py --task TASK_NAME --env_name ENV_NAME --robot ROBOT_NA
 ```
 
 # Acknowledgement
-This repo is based on the open-source repos below
+This repo is based on the open-source repos below. We are grateful to the contributions of these authors
 - [Robosuite](https://robosuite.ai/)
 - [Robomimic](https://robomimic.github.io/)
 - [MimicGen](https://github.com/NVlabs/mimicgen)
