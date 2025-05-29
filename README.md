@@ -31,7 +31,7 @@ cd robosuite-task-zoo
 pip install -e .
 cd ..
 # downgrade mujoco to previous version
-pip install mujoco==2.3.2
+pip install mujoco==2.3.2 mujoco-python-viewer
 
 ```
 
