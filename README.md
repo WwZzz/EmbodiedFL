@@ -34,6 +34,8 @@ cd ..
 pip install mujoco==2.3.2 mujoco-python-viewer
 
 ```
+### TroubleShooting
+If the code raises the error like `You appear to be missing MuJoCo. We expected to find the file here: path/to/mujoco210`, you can try to replace the line `except ImportError:` with `except:` of the file `robomimic\robomimic\envs\env_robosuite.py` when the code tries to import `mujoco_py`. 
 
 ## Characteristic
 | Task Name | Cross-Collector                         | Cross-Embodiment          | Scale  | 
