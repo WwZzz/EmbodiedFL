@@ -88,6 +88,7 @@ To generate images for all robomimic datasets, please run the command below
 cd scripts
 ./extract_obs_from_raw_datasets.sh
 ```
+We have also provided the processed image modality here [link](https://huggingface.co/datasets/WWZzz/robomimic_with_image/), which can be directly downloaded.
 ### MimicGen
 Download the dataset from the huggingface [link](https://huggingface.co/datasets/amandlek/mimicgen_datasets). The architecture should be organized as:
 ```
