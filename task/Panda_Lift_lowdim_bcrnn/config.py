@@ -154,7 +154,7 @@ def get_model():
     return Model(obs_config, obs_key_shapes, ac_dim, algo_config_rnn)
 
 class Model(nn.Module):
-    def __init__(self, obs_config, obs_key_shape, ac_dim, algo_config_rnn, actor_layer_dims=[1024, 1024], obs_normalization_stats=None):
+    def __init__(self, obs_config, obs_key_shape, ac_dim, algo_config_rnn, actor_layer_dims=[], obs_normalization_stats=None):
         super().__init__()
         self.obs_config = obs_config
         self.obs_key_shape = obs_key_shape
