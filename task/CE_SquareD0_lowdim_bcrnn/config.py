@@ -41,16 +41,16 @@ def create_config(data_path, filter_by_attribute):
     }
 
 train_paras = [
-    (ROOT_DIR + "robot/square_d0_iiwa.hdf5", 'train'),
-    (ROOT_DIR + "robot/square_d0_panda.hdf5", 'train'),
-    (ROOT_DIR + "robot/square_d0_sawyer.hdf5", 'train'),
-    (ROOT_DIR + "robot/square_d0_ur5e.hdf5", 'train'),
+    (ROOT_DIR + "/robot/square_d0_iiwa.hdf5", 'train'),
+    (ROOT_DIR + "/robot/square_d0_panda.hdf5", 'train'),
+    (ROOT_DIR + "/robot/square_d0_sawyer.hdf5", 'train'),
+    (ROOT_DIR + "/robot/square_d0_ur5e.hdf5", 'train'),
 ]
 val_paras = [
-    (ROOT_DIR + "robot/square_d0_iiwa.hdf5", 'valid'),
-    (ROOT_DIR + "robot/square_d0_panda.hdf5", 'valid'),
-    (ROOT_DIR + "robot/square_d0_sawyer.hdf5", 'valid'),
-    (ROOT_DIR + "robot/square_d0_ur5e.hdf5", 'valid'),
+    (ROOT_DIR + "/robot/square_d0_iiwa.hdf5", 'valid'),
+    (ROOT_DIR + "/robot/square_d0_panda.hdf5", 'valid'),
+    (ROOT_DIR + "/robot/square_d0_sawyer.hdf5", 'valid'),
+    (ROOT_DIR + "/robot/square_d0_ur5e.hdf5", 'valid'),
 ]
 
 class ObsPaddingDataset(tud.Dataset):
