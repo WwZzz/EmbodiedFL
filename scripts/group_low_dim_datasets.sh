@@ -1,0 +1,16 @@
+python group_hf_dataset.py --file ../data/mimicgen/robot/square_d0_iiwa.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/square_d0_panda.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/square_d0_sawyer.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/square_d0_ur5e.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/square_d1_ur5e.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/square_d1_sawyer.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/square_d1_panda.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/square_d1_iiwa.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/threading_d1_panda.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/threading_d1_iiwa.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/threading_d1_ur5e.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/threading_d1_swayer.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/threading_d0_panda.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/threading_d0_iiwa.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/threading_d0_ur5e.hdf5 --val 0.1
+python group_hf_dataset.py --file ../data/mimicgen/robot/threading_d0_swayer.hdf5 --val 0.1

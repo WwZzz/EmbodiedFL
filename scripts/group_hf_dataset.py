@@ -10,7 +10,7 @@ mask_group = "/mask"
 parser = argparse.ArgumentParser()
 parser.add_argument('--file', help='save_dir', type=str, default='data/robomimic/tool_hang/ph/low_dim_v15.hdf5')
 parser.add_argument('--val', help='ratio of train-val', type=float, default=0.2)
-parser.add_argument('--num_groups', help='num_workers', type=int, default=20)
+parser.add_argument('--num_groups', help='num_workers', type=int, default=0)
 args = parser.parse_args()
 
 with h5py.File(args.file, "a") as f:
