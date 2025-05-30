@@ -15,7 +15,7 @@ import argparse
 # task = 'task/CE_ThreadingD0_lowdim_bcrnn'
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--task', help='the task name', type=str, default='tmp_task')
+parser.add_argument('--task', help='the task name', type=str, default='CE_SquareD0_lowdim_bcrnn')
 parser.add_argument('--method', help='the method name', type=str, default='')
 parser.add_argument('--gpu', help='the id of gpu', type=int, default=0)
 args = parser.parse_args()
