@@ -38,7 +38,7 @@ cd ..
 pip install mujoco==2.3.2 mujoco-python-viewer
 
 ```
-- Remark: To run tasks from `mimicgen` (e.g., Square_D0, Threading_D0), you need to downgrade the version of `robosuite` to 1.4.1 while keeping other packages unchanged.
+- Remark: To evaluate tasks from `mimicgen` (e.g., Square_D0, Threading_D0), you need to downgrade the version of `robosuite` to 1.4.1 while keeping other packages unchanged.
 
 ## Characteristic
 | Task Name | Cross-Collector                         | Cross-Embodiment          | Scale  | 
