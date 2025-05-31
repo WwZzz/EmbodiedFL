@@ -43,20 +43,20 @@ pip install mujoco==2.3.2 mujoco-python-viewer
 ## Characteristic
 | Task Name | Cross-Collector                         | Cross-Embodiment          | Scale  | 
 |-----------|-----------------------------------------|---------------------------|--------| 
-| CE_SquareD0_lowdim_bcrnn       | ✔                                       | ✔                 | Small  |
-| CE_SquareD1_lowdim_bcrnn    | ✔ | ✔              | Small  |
-| CE_ThreadingD0_lowdim_bcrnn    | ✔ | ✔ | Small  |
-| CE_ThreadingD1_lowdim_bcrnn  | ✔ | ✔           | Small  |
-| Panda_Lift_lowdim_bcrnn  | ✔ |               | Small  |
-|Panda_NutAssemblySquare_lowdim_bcrnn|      ✔                         |                           | Small  |
-|Panda_PickPlaceCan_lowdim_bcrnn|      ✔                            |                           | Small  |
-|Panda_ToolHang_lowdim_bcrnn|                                         |                           | Medium |
-|Panda_TwoArmTransport_lowdim_bcrnn|      ✔                          |                           | Small  |
-| Panda_Lift_image_bcrnn  | ✔ |               | Small  |
-|Panda_NutAssemblySquare_image_bcrnn|      ✔                         |                           | Small  |
-|Panda_PickPlaceCan_image_bcrnn|      ✔                            |                           | Small  |
-|Panda_ToolHang_image_bcrnn|                                         |                           | Medium |
-|Panda_TwoArmTransport_image_bcrnn|      ✔                          |                           | Small  |
+| CE_SquareD0_lowdim       | ✔                                       | ✔                 | Small  |
+| CE_SquareD1_lowdim    | ✔ | ✔              | Small  |
+| CE_ThreadingD0_lowdim    | ✔ | ✔ | Small  |
+| CE_ThreadingD1_lowdim  | ✔ | ✔           | Small  |
+| Panda_Lift_lowdim  | ✔ |               | Small  |
+|Panda_NutAssemblySquare_lowdim|      ✔                         |                           | Small  |
+|Panda_PickPlaceCan_lowdim|      ✔                            |                           | Small  |
+|Panda_ToolHang_lowdim|                                         |                           | Medium |
+|Panda_TwoArmTransport_lowdim|      ✔                          |                           | Small  |
+| Panda_Lift_image  | ✔ |               | Small  |
+|Panda_NutAssemblySquare_image|      ✔                         |                           | Small  |
+|Panda_PickPlaceCan_image|      ✔                            |                           | Small  |
+|Panda_ToolHang_image|                                         |                           | Medium |
+|Panda_TwoArmTransport_image|      ✔                          |                           | Small  |
 
 ## Data Preparation
 ### Robomimic

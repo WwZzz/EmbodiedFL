@@ -37,13 +37,13 @@ class ClientFilter(BasicDecorator):
     def __str__(self):
         return f"ClientFilter_{'_'.join([str(k) for k in self.preserved_idxs])}"
 
-# task = 'task/Panda_Lift_lowdim_bcrnn'
-# task = 'task/Panda_TwoArmTransport_lowdim_bcrnn'
-# task = 'task/Panda_PickPlaceCan_lowdim_bcrnn'
-# task = 'task/Panda_NutAssemblySquare_lowdim_bcrnn'
-# task = 'task/Panda_ToolHang_lowdim_bcrnn'
-# task = 'task/CE_SquareD0_lowdim_bcrnn'
-# task = 'task/CE_ThreadingD0_lowdim_bcrnn'
+# task = 'task/Panda_Lift_lowdim'
+# task = 'task/Panda_TwoArmTransport_lowdim'
+# task = 'task/Panda_PickPlaceCan_lowdim'
+# task = 'task/Panda_NutAssemblySquare_lowdim'
+# task = 'task/Panda_ToolHang_lowdim'
+# task = 'task/CE_SquareD0_lowdim'
+# task = 'task/CE_ThreadingD0_lowdim'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--task', help='the task name', type=str, default='tmp_task')
