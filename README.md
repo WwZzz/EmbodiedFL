@@ -41,22 +41,23 @@ pip install mujoco==2.3.2 mujoco-python-viewer
 - Remark: To evaluate tasks from `mimicgen` (e.g., Square_D0, Threading_D0), you need to downgrade the version of `robosuite` to 1.4.1 while keeping other packages unchanged.
 
 ## Characteristic
-| Task Name | Cross-Collector                         | Cross-Embodiment          | Scale  | 
-|-----------|-----------------------------------------|---------------------------|--------| 
-| CE_SquareD0_lowdim       | ✔                                       | ✔                 | Small  |
-| CE_SquareD1_lowdim    | ✔ | ✔              | Small  |
-| CE_ThreadingD0_lowdim    | ✔ | ✔ | Small  |
-| CE_ThreadingD1_lowdim  | ✔ | ✔           | Small  |
-| Panda_Lift_lowdim  | ✔ |               | Small  |
-|Panda_NutAssemblySquare_lowdim|      ✔                         |                           | Small  |
-|Panda_PickPlaceCan_lowdim|      ✔                            |                           | Small  |
-|Panda_ToolHang_lowdim|                                         |                           | Medium |
-|Panda_TwoArmTransport_lowdim|      ✔                          |                           | Small  |
-| Panda_Lift_image  | ✔ |               | Small  |
-|Panda_NutAssemblySquare_image|      ✔                         |                           | Small  |
-|Panda_PickPlaceCan_image|      ✔                            |                           | Small  |
-|Panda_ToolHang_image|                                         |                           | Medium |
-|Panda_TwoArmTransport_image|      ✔                          |                           | Small  |
+| Task Name                      | Cross-Collector                         | Cross-Embodiment          | Scale  | Model            |
+|--------------------------------|-----------------------------------------|---------------------------|--------|------------------| 
+| CE_SquareD0_lowdim             | ✔                                       | ✔                 | Small  | BCRNN            | 
+| CE_SquareD0_image              | ✔                                       | ✔                 | Small  | BCRNN            |
+| CE_SquareD1_lowdim             | ✔ | ✔              | Small  | BCRNN            | 
+| CE_ThreadingD0_lowdim          | ✔ | ✔ | Small  | BCRNN            | 
+| CE_ThreadingD1_lowdim          | ✔ | ✔           | Small  | BCRNN            | 
+| Panda_Lift_lowdim              | ✔ |               | Small  | BCRNN, BCRNN_GMM | 
+| Panda_NutAssemblySquare_lowdim |      ✔                         |                           | Small  | BCRNN            | 
+| Panda_PickPlaceCan_lowdim      |      ✔                            |                           | Small  | BCRNN            | 
+| Panda_ToolHang_lowdim          |                                         |                           | Medium | BCRNN            | 
+| Panda_TwoArmTransport_lowdim   |      ✔                          |                           | Small  | BCRNN            | 
+| Panda_Lift_image               | ✔ |               | Small  | BCRNN            | 
+| Panda_NutAssemblySquare_image  |      ✔                         |                           | Small  | BCRNN            | 
+| Panda_PickPlaceCan_image       |      ✔                            |                           | Small  | BCRNN            | 
+| Panda_ToolHang_image           |                                         |                           | Medium | BCRNN            | 
+| Panda_TwoArmTransport_image    |      ✔                          |                           | Small  | BCRNN            | 
 
 ## Data Preparation
 ### Robomimic
