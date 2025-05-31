@@ -14,34 +14,21 @@ import os
 
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'data', 'robomimic')
+# ROOT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'robomimic')
 
-ObsUtils.initialize_obs_utils_with_obs_specs( {
-            "obs": {
-                "low_dim": [
-                    "robot0_eef_pos",
-                    "robot0_eef_quat",
-                    "robot0_gripper_qpos",
-                    "robot1_eef_pos",
-                    "robot1_eef_quat",
-                    "robot1_gripper_qpos",
-                    "object"
-                ],
-            },
-            "goal": { }
-        })
+obs = {
+    "low_dim": ['robot0_eef_pos', 'robot0_eef_quat', 'robot0_gripper_qpos'],
+    "rgb": ["agentview_image", "robot0_eye_in_hand_image"],
+    "depth": [],
+    "scan": [],
+}
+
+ObsUtils.initialize_obs_utils_with_obs_specs({'obs':obs, })
 
 def create_config(data_path, filter_by_attribute, seq_length=10):
     return {
         'hdf5_path': data_path,
-        'obs_keys': [
-            "robot0_eef_pos",
-            "robot0_eef_quat",
-            "robot0_gripper_qpos",
-            "robot1_eef_pos",
-            "robot1_eef_quat",
-            "robot1_gripper_qpos",
-            "object"
-        ],
+        'obs_keys': ['agentview_image', 'robot0_eef_pos', 'robot0_eef_quat', 'robot0_eye_in_hand_image','robot0_gripper_qpos'],
         'dataset_keys': ('actions', 'rewards', 'dones'),
         'load_next_obs': False,
         'frame_stack': 1,
@@ -57,27 +44,35 @@ def create_config(data_path, filter_by_attribute, seq_length=10):
     }
 
 train_paras = [
-    (ROOT_DIR + "/transport/ph/low_dim_v15.hdf5", 'train'),
-    (ROOT_DIR + "/transport/mh/low_dim_v15.hdf5", 'better_train'),
-    (ROOT_DIR + "/transport/mh/low_dim_v15.hdf5", 'okay_train'),
-    (ROOT_DIR + "/transport/mh/low_dim_v15.hdf5", 'worse_train'),
+    (ROOT_DIR + "/square/ph/image_v15.hdf5", 'train'),
+    (ROOT_DIR + "/square/mh/image_v15.hdf5", 'better_operator_1_train'),
+    (ROOT_DIR + "/square/mh/image_v15.hdf5", 'better_operator_2_train'),
+    (ROOT_DIR + "/square/mh/image_v15.hdf5", 'okay_operator_1_train'),
+    (ROOT_DIR + "/square/mh/image_v15.hdf5", 'okay_operator_2_train'),
+    (ROOT_DIR + "/square/mh/image_v15.hdf5", 'worse_operator_1_train'),
+    (ROOT_DIR + "/square/mh/image_v15.hdf5", 'worse_operator_2_train'),
 ]
 val_paras = [
-    (ROOT_DIR + "/transport/ph/low_dim_v15.hdf5", 'valid'),
-    (ROOT_DIR + "/transport/mh/low_dim_v15.hdf5", 'better_valid'),
-    (ROOT_DIR + "/transport/mh/low_dim_v15.hdf5", 'okay_valid'),
-    (ROOT_DIR + "/transport/mh/low_dim_v15.hdf5", 'worse_valid'),
+    (ROOT_DIR + "/square/ph/image_v15.hdf5", 'valid'),
+    (ROOT_DIR + "/square/mh/image_v15.hdf5", 'better_operator_1_valid'),
+    (ROOT_DIR + "/square/mh/image_v15.hdf5", 'better_operator_2_valid'),
+    (ROOT_DIR + "/square/mh/image_v15.hdf5", 'okay_operator_1_valid'),
+    (ROOT_DIR + "/square/mh/image_v15.hdf5", 'okay_operator_2_valid'),
+    (ROOT_DIR + "/square/mh/image_v15.hdf5", 'worse_operator_1_valid'),
+    (ROOT_DIR + "/square/mh/image_v15.hdf5", 'worse_operator_2_valid'),
 ]
 
 trains = [SequenceDataset(**create_config(*pi)) for pi in train_paras]
 vals = [SequenceDataset(**create_config(*pi)) for pi in val_paras]
 train_data = [tud.ConcatDataset([ti,vi]) for ti,vi in zip(trains, vals)]
+"""
 
+"""
 def get_model():
     algo_config_rnn = Config(**{
             "enabled": True,
             "horizon": 10,
-            "hidden_dim": 400,
+            "hidden_dim": 1000,
             "rnn_type": "LSTM",
             "num_layers": 2,
             "open_loop": False,
@@ -85,25 +80,12 @@ def get_model():
                 "bidirectional": False
             }
     })
-    ac_dim = 14
-    obs_key_shapes = OrderedDict([('object', [41]), ('robot0_eef_pos', [3]), ('robot0_eef_quat', [4]), ('robot0_gripper_qpos', [2]),
-                 ('robot1_eef_pos', [3]), ('robot1_eef_quat', [4]), ('robot1_gripper_qpos', [2])])
+    ac_dim = 7
+    # obs_key_shapes = OrderedDict([('object', [10]), ('robot0_eef_pos', [3]), ('robot0_eef_quat', [4]), ('robot0_gripper_qpos', [2])])
+    obs_key_shapes = OrderedDict([('agentview_image', [3, 84, 84]), ('robot0_eef_pos', [3]), ('robot0_eef_quat', [4]), ('robot0_eye_in_hand_image', [3, 84, 84]), ('robot0_gripper_qpos', [2])])
     obs_config = Config(**{
         "modalities": {
-            "obs": {
-                "low_dim": [
-                    "robot0_eef_pos",
-                    "robot0_eef_quat",
-                    "robot0_gripper_qpos",
-                    "robot1_eef_pos",
-                    "robot1_eef_quat",
-                    "robot1_gripper_qpos",
-                    "object"
-                ],
-                "rgb": [],
-                "depth": [],
-                "scan": []
-            },
+            "obs": obs,
             "goal": {
                 "low_dim": [],
                 "rgb": [],

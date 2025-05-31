@@ -52,6 +52,11 @@ pip install mujoco==2.3.2 mujoco-python-viewer
 |Panda_PickPlaceCan_lowdim_bcrnn|      ✔                            |                           | Small  |
 |Panda_ToolHang_lowdim_bcrnn|                                         |                           | Medium |
 |Panda_TwoArmTransport_lowdim_bcrnn|      ✔                          |                           | Small  |
+| Panda_Lift_image_bcrnn  | ✔ |               | Small  |
+|Panda_NutAssemblySquare_image_bcrnn|      ✔                         |                           | Small  |
+|Panda_PickPlaceCan_image_bcrnn|      ✔                            |                           | Small  |
+|Panda_ToolHang_image_bcrnn|                                         |                           | Medium |
+|Panda_TwoArmTransport_image_bcrnn|      ✔                          |                           | Small  |
 
 ## Data Preparation
 ### Robomimic
