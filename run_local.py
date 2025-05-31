@@ -51,7 +51,7 @@ parser.add_argument('--method', help='the method name', type=str, default='')
 parser.add_argument('--gpu', help='the id of gpu', type=int, default=0)
 args = parser.parse_args()
 config = {
-    'gpu':0,
+    'gpu':args.gpu,
     'num_rounds':50,
     'num_epochs': 1,
     'drop_last': True,
