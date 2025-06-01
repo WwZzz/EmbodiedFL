@@ -1,11 +1,14 @@
 import argparse
+import datetime
+import numpy as np
 from flgo.decorator import BasicDecorator
 import flgo
-import flgo.algorithm.fedavg as fedavg
+import algo.local as local
 import flgo.experiment.logger.full_logger as fel
 import json
 import os
 import yaml
+from torch.utils.tensorboard import SummaryWriter
 
 class ClientFilter(BasicDecorator):
     """
@@ -52,6 +55,25 @@ default_config = {
     'weight_decay':0.0,
 }
 
+class MyLogger(fel.FullLogger):
+    def initialize(self, *args, **kwargs):
+        self.writter = SummaryWriter(os.path.join(self.server.option['task'], "runs/" + self.server.option['save_checkpoint']+'_'+datetime.datetime.now().strftime("%Y%m%d-%H%M%S")))
+
+    def log_once(self, *args, **kwargs):
+        # calculate weighted averaging of metrics on training datasets across participants
+        local_data_vols = [c.datavol for c in self.clients]
+        total_data_vol = sum(local_data_vols)
+        # calculate weighted averaging and other statistics of metrics on validation datasets across clients
+        local_val_metrics = self.server.global_test(flag='val')
+        for met_name, met_val in local_val_metrics.items():
+            self.output['local_val_'+met_name+'_dist'].append(met_val)
+            self.output['local_val_' + met_name].append(1.0 * sum([client_vol * client_met for client_vol, client_met in zip(local_data_vols, met_val)]) / total_data_vol)
+            self.writter.add_scalar('val_' + met_name, 1.0 * sum([client_vol * client_met for client_vol, client_met in zip(local_data_vols, met_val)]) / total_data_vol, self.server.current_round)
+            self.output['mean_local_val_' + met_name].append(np.mean(met_val))
+            self.output['std_local_val_' + met_name].append(np.std(met_val))
+        # output to stdout
+        self.show_current_output()
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--task', help='the task name', type=str, default='tmp_task')
 parser.add_argument('--gpu', help='the id of gpu', type=int, default=0)
@@ -78,13 +100,13 @@ if __name__ == '__main__':
         for i in range(num_clients):
             config_i = config.copy()
             config_i['save_checkpoint'] = f'single_client_{i}'
-            runner = flgo.init(task, fedavg, option=config_i, Logger=fel.FullLogger)
+            runner = flgo.init(task, local, option=config_i, Logger=MyLogger)
             ClientFilter(preserved_idxs=[i])(runner)
             runner.run()
     else:
         config_i = config.copy()
         assert args.client_id < num_clients
         config_i['save_checkpoint'] = f'single_client_{args.client_id}'
-        runner = flgo.init(task, fedavg, option=config_i, Logger=fel.FullLogger)
+        runner = flgo.init(task, local, option=config_i, Logger=MyLogger)
         ClientFilter(preserved_idxs=[args.client_id])(runner)
         runner.run()
