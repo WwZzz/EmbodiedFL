@@ -81,7 +81,7 @@ def get_model():
     algo_config_rnn = Config(**{
             "enabled": True,
             "horizon": SEQ_LEN,
-            "hidden_dim": 400,
+            "hidden_dim": 1000,
             "rnn_type": "LSTM",
             "num_layers": 2,
             "open_loop": False,

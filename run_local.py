@@ -5,6 +5,7 @@ import flgo.algorithm.fedavg as fedavg
 import flgo.experiment.logger.full_logger as fel
 import json
 import os
+import yaml
 
 class ClientFilter(BasicDecorator):
     """
@@ -37,21 +38,7 @@ class ClientFilter(BasicDecorator):
     def __str__(self):
         return f"ClientFilter_{'_'.join([str(k) for k in self.preserved_idxs])}"
 
-# task = 'task/Panda_Lift_lowdim'
-# task = 'task/Panda_TwoArmTransport_lowdim'
-# task = 'task/Panda_PickPlaceCan_lowdim'
-# task = 'task/Panda_NutAssemblySquare_lowdim'
-# task = 'task/Panda_ToolHang_lowdim'
-# task = 'task/CE_SquareD0_lowdim'
-# task = 'task/CE_ThreadingD0_lowdim'
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--task', help='the task name', type=str, default='tmp_task')
-parser.add_argument('--method', help='the method name', type=str, default='')
-parser.add_argument('--gpu', help='the id of gpu', type=int, default=0)
-args = parser.parse_args()
-config = {
-    'gpu':args.gpu,
+default_config = {
     'num_rounds':50,
     'num_epochs': 1,
     'drop_last': True,
@@ -64,14 +51,40 @@ config = {
     'optimizer':'Adam',
     'weight_decay':0.0,
 }
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--task', help='the task name', type=str, default='tmp_task')
+parser.add_argument('--gpu', help='the id of gpu', type=int, default=0)
+parser.add_argument('--config', help='the config path', type=str, default='')
+parser.add_argument('--client_id', help='the id of client', type=int, default=-1)
+args = parser.parse_args()
+
 if __name__ == '__main__':
+    # Init Task Path
     task = os.path.join('task', args.task)
+    # Load Configuration
+    if args.config=='' or not os.path.exists(args.config):
+        config =  default_config
+    else:
+        with open(args.config, 'r', encoding='utf-8') as file:
+            config = yaml.safe_load(file)
+    config['gpu'] = args.gpu
+    # Get Total Number of Clients
     with open(os.path.join(task, 'data.json'), 'r') as f:
         data = json.load(f)
         num_clients = len(data['client_names'])
-    for i in range(num_clients):
+    # Train a Local Model for Each Client and Save Them
+    if args.client_id < 0: # all client
+        for i in range(num_clients):
+            config_i = config.copy()
+            config_i['save_checkpoint'] = f'single_client_{i}'
+            runner = flgo.init(task, fedavg, option=config_i, Logger=fel.FullLogger)
+            ClientFilter(preserved_idxs=[i])(runner)
+            runner.run()
+    else:
         config_i = config.copy()
-        config_i['save_checkpoint'] = f'single_client_{i}'
+        assert args.client_id < num_clients
+        config_i['save_checkpoint'] = f'single_client_{args.client_id}'
         runner = flgo.init(task, fedavg, option=config_i, Logger=fel.FullLogger)
-        ClientFilter(preserved_idxs=[i])(runner)
+        ClientFilter(preserved_idxs=[args.client_id])(runner)
         runner.run()

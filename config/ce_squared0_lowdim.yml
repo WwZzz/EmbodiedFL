@@ -1,0 +1,13 @@
+    num_rounds: 2000
+    num_steps: 100
+    drop_last: True
+    batch_size: 100
+    lr_scheduler: 0
+    learning_rate_decay: 0.998
+    proportion: 1.0
+    clip_grad: 10
+    learning_rate: 0.0001
+    optimizer: 'Adam'
+    weight_decay: 0.0
+    eval_interval: 50
+    check_interval: 50
