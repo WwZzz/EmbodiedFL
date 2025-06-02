@@ -61,7 +61,7 @@ class MyLogger(fel.FullLogger):
 
     def log_once(self, *args, **kwargs):
         # calculate weighted averaging of metrics on training datasets across participants
-        local_data_vols = [c.datavol for c in self.clients]
+        local_data_vols = [c.datavol for c in self.server.clients]
         total_data_vol = sum(local_data_vols)
         # calculate weighted averaging and other statistics of metrics on validation datasets across clients
         local_val_metrics = self.server.global_test(flag='val')
