@@ -17,8 +17,11 @@ parser.add_argument('--random_group', help='if group randomly', action='store_tr
 args = parser.parse_args()
 
 with h5py.File(args.file, "a") as f:
-    if args.clear_group and mask_group in f: del f[mask_group]
-    mask = f.create_group(mask_group)
+    if args.clear_group and mask_group in f:
+        del f[mask_group]
+        mask = f.create_group(mask_group)
+    else:
+        mask = f[mask_group]
     members = sorted(f[source_group].keys(), key=lambda x: int(x.split('_')[1]))
     data_size = len(members)
     if args.num_groups<=0:
@@ -29,7 +32,10 @@ with h5py.File(args.file, "a") as f:
         val_size = max(int(group_size*args.val), 1)
         train_size = group_size - val_size
         grouped = [members[:train_size], members[train_size:]]
-        group_names = [args.group_prefix + 'train', args.group_prefix + 'valid']
+        if args.group_prefix!="":
+            group_names = ['train_'+args.group_prefix,  'valid_'+args.group_prefix]
+        else:
+            group_names = ['train', 'valid']
     else:
         group_size = data_size // args.num_groups
         # if data_size % args.num_groups != 0: group_size += 1
@@ -40,7 +46,6 @@ with h5py.File(args.file, "a") as f:
             rest = members[-rest_num:]
             for mi, tgi in zip(rest, tmp_grouped):
                 tgi.append(mi)
-
         if args.val<0:
             grouped = tmp_grouped
             group_names = [f'{i}' for i in range(len(tmp_grouped))]
@@ -52,7 +57,11 @@ with h5py.File(args.file, "a") as f:
                 val_size = max(int(len(gim)*args.val), 1)
                 train_size = group_size - val_size
                 grouped.extend([gim[:train_size], gim[train_size:]])
-                group_names.extend([f'train_{args.group_prefix}{i}', f'valid_{args.group_prefix}{i}'])
+                if args.group_prefix!="":
+                    crt_gname = [f'train_{args.group_prefix}_{i}', f'valid_{args.group_prefix}_{i}']
+                else:
+                    crt_gname = [f'train_{i}', f'valid_{i}']
+                group_names.extend(crt_gname)
     str_dtype = h5py.string_dtype(encoding='ascii')  # 强制ASCII编码
     for group_idx, (sub_members, gname) in enumerate(zip(grouped, group_names)):
         validated = []

@@ -79,6 +79,7 @@ parser.add_argument('--task', help='the task name', type=str, default='tmp_task'
 parser.add_argument('--gpu', help='the id of gpu', type=int, default=0)
 parser.add_argument('--config', help='the config path', type=str, default='')
 parser.add_argument('--client_id', help='the id of client', type=int, default=-1)
+parser.add_argument('--ckpt_prefix', help='the checkpoint name', type=str, default='')
 args = parser.parse_args()
 
 if __name__ == '__main__':
@@ -99,14 +100,16 @@ if __name__ == '__main__':
     if args.client_id < 0: # all client
         for i in range(num_clients):
             config_i = config.copy()
-            config_i['save_checkpoint'] = f'single_client_{i}'
+            config_i['save_checkpoint'] = args.ckpt_prefix + f'single_client_{i}'
+            config_i['load_checkpoint'] = args.ckpt_prefix + f'single_client_{i}'
             runner = flgo.init(task, local, option=config_i, Logger=MyLogger)
             ClientFilter(preserved_idxs=[i])(runner)
             runner.run()
     else:
         config_i = config.copy()
         assert args.client_id < num_clients
-        config_i['save_checkpoint'] = f'single_client_{args.client_id}'
+        config_i['save_checkpoint'] = args.ckpt_prefix + f'single_client_{args.client_id}'
+        config_i['load_checkpoint'] = args.ckpt_prefix + f'single_client_{args.client_id}'
         runner = flgo.init(task, local, option=config_i, Logger=MyLogger)
         ClientFilter(preserved_idxs=[args.client_id])(runner)
         runner.run()
