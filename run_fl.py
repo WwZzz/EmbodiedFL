@@ -6,14 +6,6 @@ import json
 import os
 import argparse
 
-# task = 'task/Panda_Lift_lowdim'
-# task = 'task/Panda_TwoArmTransport_lowdim'
-# task = 'task/Panda_PickPlaceCan_lowdim'
-# task = 'task/Panda_NutAssemblySquare_lowdim'
-# task = 'task/Panda_ToolHang_lowdim'
-# task = 'task/CE_SquareD0_lowdim'
-# task = 'task/CE_ThreadingD0_lowdim'
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--task', help='the task name', type=str, default='CE_SquareD0_lowdim')
 parser.add_argument('--method', help='the method name', type=str, default='')
