@@ -1,5 +1,7 @@
 import collections
 import os
+
+import imageio
 import robomimic.utils.env_utils as EnvUtils
 import sys
 from tqdm import tqdm
@@ -25,8 +27,8 @@ parser.add_argument('--horizon', help='the horizon of each episode', type=int, d
 parser.add_argument('--render', help='if render', action='store_true', default=False)
 parser.add_argument('--render_offscreen', help='if render offscreen', action='store_true', default=False)
 parser.add_argument('--output_dir', help='the dir of the output path', type=str, default='')
-parser.add_argument('--eval_interval', help='the interval of checkpoints to be evaluated', type=int, default=5)
-parser.add_argument('--max_eval_times', help='the max times of evaluation', type=int, default=10)
+parser.add_argument('--eval_interval', help='the interval of checkpoints to be evaluated', type=int, default=2)
+parser.add_argument('--max_eval_times', help='the max times of evaluation', type=int, default=-1)
 parser.add_argument('--personalize', help='whether to use local models',action='store_true', default=False)
 args = parser.parse_args()
 
@@ -63,10 +65,17 @@ if __name__ == "__main__":
         model.eval()
         # reset the environment
         all_results = []
-        with torch.no_grad():
-            for _ in tqdm(range(args.num_episodes)):
-                result = run_rollout(model.model, env, render=args.render, horizon=args.horizon)
-                all_results.append(result)
+        if args.render_offscreen:
+            video_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(args.ckpt))), 'video', os.path.split(os.path.dirname(args.ckpt))[-1])
+            if not os.path.exists(video_dir): os.makedirs(video_dir)
+            video_path = os.path.join(video_dir, os.path.split(args.ckpt)[-1]) + '.mp4'
+            video_writer = imageio.get_writer(video_path, fps=20)
+        else:
+            video_writer = None
+        for _ in tqdm(range(args.num_episodes)):
+            result = run_rollout(model.model, env, render=args.render, horizon=args.horizon, video_writer=video_writer)
+            all_results.append(result)
+        if video_writer is not None: video_writer.close()
         final_results = process_results(all_results)
         final_results['task'] = args.task
         final_results['env_name'] = env_name
@@ -88,27 +97,36 @@ if __name__ == "__main__":
         server =flgo.init(task, fedavg, option={'gpu':args.gpu, 'load_checkpoint':args.ckpt,})
         all_results = []
         eval_times = 0
-        for ckpt in tqdm(all_ckpts):
-            server.option['load_checkpoint'] = ckpt
-            server._load_checkpoint()
-            model = server.model
-            model.eval()
-            ckpt_results = []
-            with torch.no_grad():
-                for _ in tqdm(range(args.num_episodes)):
-                    result = run_rollout(model.model, env, render=args.render, horizon=args.horizon)
+        with tqdm(all_ckpts, desc="Processing Checkpoints") as pbar:
+            for ckpt in pbar:
+                server.option['load_checkpoint'] = ckpt
+                server._load_checkpoint()
+                model = server.model
+                model.eval()
+                ckpt_results = []
+                if args.render_offscreen:
+                    video_dir = os.path.join(os.path.dirname(os.path.dirname(args.ckpt)), 'video', os.path.split(args.ckpt)[-1])
+                    if not os.path.exists(video_dir): os.makedirs(video_dir)
+                    video_path = os.path.join(video_dir, os.path.split(ckpt)[-1]) + '.mp4'
+                    video_writer = imageio.get_writer(video_path, fps=20)
+                else:
+                    video_writer = None
+                for _ in tqdm(range(args.num_episodes), leave=False):
+                    result = run_rollout(model.model, env, render=args.render, horizon=args.horizon, video_writer=video_writer)
                     ckpt_results.append(result)
-            crt_results = process_results(ckpt_results)
-            crt_results['task'] = args.task
-            crt_results['env_name'] = env_name
-            crt_results['num_episodes'] = args.num_episodes
-            crt_results['horizon'] = args.horizon
-            crt_results['ckpt'] = ckpt
-            crt_results['round'] = os.path.split(ckpt)[-1].split('.')[-1]
-            all_results.append(crt_results)
-            eval_times += 1
-            if eval_times >= args.max_eval_times:
-                break
+                if video_writer is not None: video_writer.close()
+                crt_results = process_results(ckpt_results)
+                crt_results['task'] = args.task
+                crt_results['env_name'] = env_name
+                crt_results['num_episodes'] = args.num_episodes
+                crt_results['horizon'] = args.horizon
+                crt_results['ckpt'] = ckpt
+                crt_results['round'] = os.path.split(ckpt)[-1].split('.')[-1]
+                all_results.append(crt_results)
+                eval_times += 1
+                pbar.set_description(f"Processing Checkpoints | Success Rate: {crt_results['success_rate']:.4f}")
+                if args.max_eval_times>0 and eval_times >= args.max_eval_times:
+                    break
         all_success_rate = [cres['success_rate'] for cres in all_results]
         max_success_rate = max(all_success_rate)
         optimal_round = all_results[np.argmax(all_success_rate)]['round']

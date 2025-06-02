@@ -10,7 +10,7 @@ import robosuite as suite
 import robomimic.utils.tensor_utils as TensorUtils
 import robomimic.utils.obs_utils as ObsUtils
 
-
+@torch.no_grad()
 def run_rollout(
         policy,
         env,
@@ -18,6 +18,8 @@ def run_rollout(
         use_goals=False,
         render=True,
         terminate_on_success=True,
+        video_writer=None,
+        video_skip = 5,
     ):
     """
     Runs a rollout in an environment with the current network parameters.
@@ -52,10 +54,11 @@ def run_rollout(
     total_reward = 0.
     success = { k: False for k in env.is_success() } # success metrics
     try:
+        video_count = 0
         for step_i in range(horizon):
             # get action from policy
-            # ac = policy.get_action(ob_dict).squeeze().detach().cpu().numpy()
-            ac = np.random.randn(env.action_dimension)
+            ac = policy.get_action(ob_dict).squeeze().detach().cpu().numpy()
+            # ac = np.random.randn(env.action_dimension)
             # play action
             ob_dict, r, done, _ = env.step(ac)
             # render to screen
@@ -66,15 +69,19 @@ def run_rollout(
             cur_success_metrics = env.is_success()
             for k in success:
                 success[k] = success[k] or cur_success_metrics[k]
+            if video_writer is not None:
+                if video_count % video_skip == 0:
+                    video_img = env.render(mode="rgb_array", height=512, width=512)
+                    video_writer.append_data(video_img)
             # break if done
             if done or (terminate_on_success and success["task"]):
                 break
     except env.rollout_exceptions as e:
         print("WARNING: got rollout exception {}".format(e))
 
-    results["Return"] = total_reward
-    results["Horizon"] = step_i + 1
-    results["Success_Rate"] = float(success["task"])
+    results["reward"] = total_reward
+    results["horizon"] = step_i + 1
+    results["success_rate"] = float(success["task"])
     # log additional success metrics
     for k in success:
         if k != "task":

@@ -64,7 +64,8 @@ class ObsPaddingDataset(tud.Dataset):
     def __getitem__(self, idx):
         res = self.sequence_data[idx]
         for k in res['obs'].keys():
-            dim = self.obs_key_shapes[k] if not isinstance(self.obs_key_shapes[k], list) else np.prod(np.array(self.obs_key_shapes[k]))
+            dim = self.obs_key_shape[k] if not isinstance(self.obs_key_shape[k], list) else np.prod(np.array(self.obs_key_shape[k]))
+
             if res['obs'][k].shape[1]<dim:
                 res['obs'][k] = np.hstack([res['obs'][k], np.zeros((res['obs'][k].shape[0], dim-res['obs'][k].shape[1]))])
         return res
@@ -252,7 +253,7 @@ class Model(nn.Module):
         """
         for k in obs:
             if k not in self.obs_key_shape: continue
-            dim = self.obs_key_shapes[k] if not isinstance(self.obs_key_shapes[k], list) else np.prod(np.array(self.obs_key_shapes[k]))
+            dim = self.obs_key_shape[k] if not isinstance(self.obs_key_shape[k], list) else np.prod(np.array(self.obs_key_shape[k]))
             if obs[k].shape[0]<dim:
                 obs[k] = np.concatenate([obs[k], np.zeros(dim-obs[k].shape[0])])
         obs = TensorUtils.to_tensor(obs)
