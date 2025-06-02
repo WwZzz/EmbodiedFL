@@ -9,32 +9,38 @@ mask_group = "/mask"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--file', help='save_dir', type=str, default='data/robomimic/tool_hang/ph/low_dim_v15.hdf5')
-parser.add_argument('--val', help='ratio of train-val', type=float, default=0.2)
+parser.add_argument('--val', help='ratio of train-val', type=float, default=0.1)
 parser.add_argument('--num_groups', help='num_workers', type=int, default=0)
+parser.add_argument('--group_prefix', help='group_prefix', type=str, default='')
+parser.add_argument('--clear_group', help='whether to clear current groups', action='store_true', default=False)
+parser.add_argument('--random_group', help='if group randomly', action='store_true', default=False)
 args = parser.parse_args()
 
 with h5py.File(args.file, "a") as f:
-    if mask_group in f: del f[mask_group]
+    if args.clear_group and mask_group in f: del f[mask_group]
     mask = f.create_group(mask_group)
     members = sorted(f[source_group].keys(), key=lambda x: int(x.split('_')[1]))
     data_size = len(members)
     if args.num_groups<=0:
+        # train/val split
         group_size = data_size
         if args.val<0 or group_size<=1:
             exit()
         val_size = max(int(group_size*args.val), 1)
         train_size = group_size - val_size
         grouped = [members[:train_size], members[train_size:]]
-        group_names = ['train', 'valid']
+        group_names = [args.group_prefix + 'train', args.group_prefix + 'valid']
     else:
         group_size = data_size // args.num_groups
         # if data_size % args.num_groups != 0: group_size += 1
+        if args.random_group: np.random.shuffle(members)
         tmp_grouped = [members[i * group_size:(i + 1) * group_size] for i in range(args.num_groups)]
         rest_num = data_size % args.num_groups
         if rest_num != 0:
             rest = members[-rest_num:]
             for mi, tgi in zip(rest, tmp_grouped):
                 tgi.append(mi)
+
         if args.val<0:
             grouped = tmp_grouped
             group_names = [f'{i}' for i in range(len(tmp_grouped))]
@@ -46,7 +52,7 @@ with h5py.File(args.file, "a") as f:
                 val_size = max(int(len(gim)*args.val), 1)
                 train_size = group_size - val_size
                 grouped.extend([gim[:train_size], gim[train_size:]])
-                group_names.extend([f'train_{i}', f'valid_{i}'])
+                group_names.extend([f'train_{args.group_prefix}{i}', f'valid_{args.group_prefix}{i}'])
     str_dtype = h5py.string_dtype(encoding='ascii')  # 强制ASCII编码
     for group_idx, (sub_members, gname) in enumerate(zip(grouped, group_names)):
         validated = []
