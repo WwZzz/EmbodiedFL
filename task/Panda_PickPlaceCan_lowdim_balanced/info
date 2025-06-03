@@ -1,1 +1,1 @@
-{"benchmark":"task.Panda_PickPlaceCan_lowdim","bmk_path":"\/home\/dataset\/wz\/MACHINE_LAB\/EmbodiedFL\/task\/Panda_PickPlaceCan_lowdim","scene":"horizontal","num_clients":"unknown"}
+{"benchmark":"task.Panda_PickPlaceCan_lowdim_balanced","bmk_path":"\/home\/dataset\/wz\/MACHINE_LAB\/EmbodiedFL\/task\/Panda_PickPlaceCan_lowdim_balanced","scene":"horizontal","num_clients":"unknown"}
