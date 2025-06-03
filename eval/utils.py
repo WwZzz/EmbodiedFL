@@ -1,6 +1,7 @@
 import os
 import robomimic.utils.env_utils as EnvUtils
 import numpy as np
+import random
 import sys
 from tqdm import tqdm
 import torch
@@ -87,3 +88,16 @@ def run_rollout(
         if k != "task":
             results["{}_Success_Rate".format(k)] = float(success[k])
     return results
+
+def setup_seed(seed):
+    r"""
+    Fix all the random seed used in numpy, torch and random module
+
+    Args:
+        seed (int): the random seed
+    """
+    random.seed(1+seed)
+    np.random.seed(21+seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    torch.manual_seed(12+seed)
+    torch.cuda.manual_seed_all(123+seed)

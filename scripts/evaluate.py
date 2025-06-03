@@ -7,7 +7,7 @@ import sys
 from tqdm import tqdm
 import torch
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from eval.utils import run_rollout
+from eval.utils import run_rollout, setup_seed
 from eval.config import ALL_ENV_CONFIGS
 import flgo
 import flgo.algorithm.fedavg as fedavg
@@ -15,6 +15,7 @@ import argparse
 import numpy as np
 from collections import defaultdict
 import json
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--env_name', help='the task config path', type=str)
@@ -30,6 +31,7 @@ parser.add_argument('--output_dir', help='the dir of the output path', type=str,
 parser.add_argument('--eval_interval', help='the interval of checkpoints to be evaluated', type=int, default=2)
 parser.add_argument('--max_eval_times', help='the max times of evaluation', type=int, default=-1)
 parser.add_argument('--personalize', help='whether to use local models',action='store_true', default=False)
+parser.add_argument('--seed', help='the random seed', type=int, default=0)
 args = parser.parse_args()
 
 def load_env_meta(env_name, robot_name):
@@ -47,6 +49,7 @@ def process_results(results):
 
 
 if __name__ == "__main__":
+    setup_seed(args.seed)
     task = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'task', args.task)
     env_name = args.env_name
     env_meta = load_env_meta(env_name, args.robot)
