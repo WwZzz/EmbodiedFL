@@ -41,6 +41,8 @@ pip install mujoco==2.3.2 mujoco-python-viewer
 - Remark: To evaluate tasks from `mimicgen` (e.g., Square_D0, Threading_D0), you need to downgrade the version of `robosuite` to 1.4.1 while keeping other packages unchanged.
 
 ## Characteristic
+
+### Task
 | Task Name                      | Cross-Collector                         | Cross-Embodiment          | Scale  | Model            |
 |--------------------------------|-----------------------------------------|---------------------------|--------|------------------| 
 | CE_SquareD0_lowdim             | ✔                                       | ✔                 | Small  | BCRNN            | 
@@ -58,6 +60,17 @@ pip install mujoco==2.3.2 mujoco-python-viewer
 | Panda_PickPlaceCan_image       |      ✔                            |                           | Small  | BCRNN            | 
 | Panda_ToolHang_image           |                                         |                           | Medium | BCRNN            | 
 | Panda_TwoArmTransport_image    |      ✔                          |                           | Small  | BCRNN            | 
+
+
+### Algorithm
+| Name        | Desc                                                  |
+|-------------|-------------------------------------------------------|
+| Local       | each client trains their models locally without FL    |
+| Centralized | Ideal case where all the clients' data is centralized |
+| Fedavg      | standard FL procedure                                 |
+
+
+
 
 ## Data Preparation
 ### Robomimic
