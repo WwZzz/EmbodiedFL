@@ -58,7 +58,7 @@ if __name__ == "__main__":
         env_name=env_name,
         render=args.render,
         render_offscreen=args.render_offscreen,
-        use_image_obs=False,
+        use_image_obs=True,
         use_depth_obs=False,
     )
     if not os.path.isdir(args.ckpt):
