@@ -4,7 +4,6 @@ import torch.nn as nn
 import torch.utils.data as tud
 import robomimic.utils.obs_utils as ObsUtils
 from  collections import OrderedDict, defaultdict
-from task.Panda_Lift_image.config import RNN_CONFIG
 from utils.data_utils import Float32Converter
 from utils.model_utils import BCRNN, BCRNN_ENCODER_CONFIG
 from torch.optim import Adam

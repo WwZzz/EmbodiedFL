@@ -63,6 +63,7 @@ parser.add_argument('--task', help='the task name', type=str, default='tmp_task'
 parser.add_argument('--gpu', help='the id of gpu', type=int, default=0)
 parser.add_argument('--config', help='the config path', type=str, default='')
 parser.add_argument('--ckpt_prefix', help='the checkpoint name', type=str, default='')
+parser.add_argument('--mmap', help='whether to use memory mapping for shared memory across processes', action='store_true', default=False)
 args = parser.parse_args()
 
 if __name__ == '__main__':
@@ -83,6 +84,7 @@ if __name__ == '__main__':
     config_i = config.copy()
     config_i['save_checkpoint'] = args.ckpt_prefix + f'all_centralized'
     config_i['load_checkpoint'] = args.ckpt_prefix + f'all_centralized'
+    if args.mmap: config_i['load_mode'] = "mmap"
     runner = flgo.init(task, algo.centralized, option=config_i, Logger=MyLogger)
     Centralized()(runner)
     runner.run()
