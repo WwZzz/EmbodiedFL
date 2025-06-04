@@ -15,7 +15,7 @@ import argparse
 import numpy as np
 from collections import defaultdict
 import json
-
+from tianshou.env import SubprocVectorEnv
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--env_name', help='the task config path', type=str)
@@ -24,6 +24,7 @@ parser.add_argument('--task', help='the task name', type=str, default='tmp_task'
 parser.add_argument('--ckpt', help='the path of the checkpoint', type=str, default='')
 parser.add_argument('--gpu', help='the id of gpu', type=int, default=0)
 parser.add_argument('--num_episodes', help='the number of episodes', type=int, default=50)
+parser.add_argument('--num_envs', help='the number of episodes', type=int, default=-1)
 parser.add_argument('--horizon', help='the horizon of each episode', type=int, default=400)
 parser.add_argument('--render', help='if render', action='store_true', default=False)
 parser.add_argument('--render_offscreen', help='if render offscreen', action='store_true', default=False)
@@ -47,20 +48,26 @@ def process_results(results):
     mean_horizon = np.mean(l['horizon']).astype(np.float32)
     return {'reward': mean_reward.item(), 'success_rate': success_rate.item(), 'horizon': mean_horizon.item()}
 
+def create_env(env_meta, env_name, render=False, render_offscreen=False, use_image_obs=True):
+    return EnvUtils.create_env_from_metadata(
+        env_meta=env_meta,
+        env_name=env_name,
+        render=render,
+        render_offscreen=render_offscreen,
+        use_image_obs=use_image_obs,
+        use_depth_obs=False,
+    )
 
 if __name__ == "__main__":
     setup_seed(args.seed)
     task = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'task', args.task)
     env_name = args.env_name
     env_meta = load_env_meta(env_name, args.robot)
-    env = EnvUtils.create_env_from_metadata(
-        env_meta=env_meta,
-        env_name=env_name,
-        render=args.render,
-        render_offscreen=args.render_offscreen,
-        use_image_obs=True,
-        use_depth_obs=False,
-    )
+    if args.num_envs > 0:
+        env_list = [create_env(env_meta, env_name, False, args.render_offscreen) for _ in range(args.num_envs)]
+        env = SubprocVectorEnv(env_list)
+    else:
+        env = create_env(env_meta, env_name, args.render, args.render_offscreen)
     if not os.path.isdir(args.ckpt):
         server = flgo.init(task, fedavg, option={'gpu': args.gpu, 'load_checkpoint': args.ckpt, })
         server._load_checkpoint()

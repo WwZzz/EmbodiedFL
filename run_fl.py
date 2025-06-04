@@ -18,6 +18,7 @@ parser.add_argument('--method', help='the method name', type=str, default='fedav
 parser.add_argument('--gpu', help='the id of gpu', type=int, default=0)
 parser.add_argument('--config', help='the config path', type=str, default='')
 parser.add_argument('--ckpt_prefix', help='the checkpoint name', type=str, default='')
+parser.add_argument('--mmap', help='whether to use memory mapping for shared memory across processes', action='store_true', default=False)
 args = parser.parse_args()
 
 class MyLogger(fel.FullLogger):
@@ -76,6 +77,6 @@ if __name__=='__main__':
             continue
     if algo is None: raise ModuleNotFoundError("{} was not found".format(algo))
     # Run
-    config['load_mode'] = "mmap"
+    if args.mmap: config['load_mode'] = "mmap"
     runner = flgo.init(task, algo, option=config, Logger=MyLogger)
     runner.run()

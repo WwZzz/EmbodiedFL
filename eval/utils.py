@@ -5,7 +5,7 @@ import random
 import sys
 from tqdm import tqdm
 import torch
-
+from tianshou.env import SubprocVectorEnv
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import robosuite as suite
 import robomimic.utils.tensor_utils as TensorUtils
@@ -46,6 +46,7 @@ def run_rollout(
     Returns:
         results (dict): dictionary containing return, success rate, etc.
     """
+    batched = isinstance(env, SubprocVectorEnv)
     policy.reset()
     ob_dict = env.reset()
     goal_dict = None
@@ -54,6 +55,15 @@ def run_rollout(
     video_count = 0  # video frame counter
     total_reward = 0.
     success = { k: False for k in env.is_success() } # success metrics
+    if batched:
+        end_step = [None for _ in range(len(env))]
+    else:
+        end_step = None
+
+    if batched:
+        video_frames = [[] for _ in range(len(env))]
+    else:
+        video_frames = []
     try:
         video_count = 0
         for step_i in range(horizon):

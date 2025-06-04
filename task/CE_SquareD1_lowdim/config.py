@@ -6,6 +6,7 @@ import robomimic.utils.obs_utils as ObsUtils
 from  collections import OrderedDict, defaultdict
 import robomimic.utils.tensor_utils as TensorUtils
 from robomimic.models.policy_nets import RNNActorNetwork
+from utils.data_utils import Float32Converter
 import robomimic.utils.loss_utils as LossUtils
 import robomimic.models.base_nets as BaseNets
 from torch.optim import Adam
@@ -69,8 +70,8 @@ class ObsPaddingDataset(tud.Dataset):
         return res
 
 obs_key_shapes = OrderedDict([('object', [17]), ('robot0_eef_pos', [3]), ('robot0_eef_quat', [4]), ('robot0_gripper_qpos', [6])])
-trains = [ObsPaddingDataset(SequenceDataset(**create_config(*pi)), obs_key_shapes) for pi in train_paras]
-vals = [ObsPaddingDataset(SequenceDataset(**create_config(*pi)), obs_key_shapes) for pi in val_paras]
+trains = [ObsPaddingDataset(Float32Converter(SequenceDataset(**create_config(*pi))), obs_key_shapes) for pi in train_paras]
+vals = [ObsPaddingDataset(Float32Converter(SequenceDataset(**create_config(*pi))), obs_key_shapes) for pi in val_paras]
 # train_data = trains
 train_data = [tud.ConcatDataset([ti,vi]) for ti,vi in zip(trains, vals)]
 # xx = [t[0] for t in trains]

@@ -1,115 +1,12 @@
-from robomimic.utils.dataset import SequenceDataset
 from robomimic.config.config import Config
 import torch.nn as nn
-import torch.utils.data as tud
 import robomimic.utils.obs_utils as ObsUtils
 from  collections import OrderedDict, defaultdict
 import robomimic.utils.tensor_utils as TensorUtils
 from robomimic.models.policy_nets import RNNActorNetwork
-from utils.data_utils import Float32Converter
-import robomimic.utils.loss_utils as LossUtils
 import robomimic.models.base_nets as BaseNets
-from torch.optim import Adam
-import torch
-import numpy as np
-import os
 
-ROOT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'data', 'mimicgen')
-ObsUtils.initialize_obs_utils_with_obs_specs( {
-            "obs": {
-                "low_dim": ['object', 'robot0_eef_pos', 'robot0_eef_quat', 'robot0_gripper_qpos'],
-            },
-            "goal": { }
-        })
-
-def create_config(data_path, filter_by_attribute, seq_length=10):
-    return {
-        'hdf5_path': data_path,
-        'obs_keys': ['object', 'robot0_eef_pos', 'robot0_eef_quat', 'robot0_gripper_qpos'],
-        'dataset_keys': ('actions', 'rewards', 'dones'),
-        'load_next_obs': False,
-        'frame_stack': 1,
-        'seq_length': seq_length,
-        'pad_frame_stack': True,
-        'pad_seq_length': True,
-        'get_pad_mask': False,
-        'goal_mode': None,
-        'hdf5_cache_mode': None,
-        'hdf5_use_swmr': True,
-        'hdf5_normalize_obs': False,
-        'filter_by_attribute': filter_by_attribute,
-    }
-
-train_paras = [
-    (ROOT_DIR + "/robot/threading_d0_iiwa.hdf5", 'train'),
-    (ROOT_DIR + "/robot/threading_d0_panda.hdf5", 'train'),
-    (ROOT_DIR + "/robot/threading_d0_sawyer.hdf5", 'train'),
-    (ROOT_DIR + "/robot/threading_d0_ur5e.hdf5", 'train'),
-]
-val_paras = [
-    (ROOT_DIR + "/robot/threading_d0_iiwa.hdf5", 'valid'),
-    (ROOT_DIR + "/robot/threading_d0_panda.hdf5", 'valid'),
-    (ROOT_DIR + "/robot/threading_d0_sawyer.hdf5", 'valid'),
-    (ROOT_DIR + "/robot/threading_d0_ur5e.hdf5", 'valid'),
-]
-
-class ObsPaddingDataset(tud.Dataset):
-    def __init__(self, sequence_data, obs_key_shapes):
-        self.sequence_data = sequence_data
-        self.obs_key_shapes = obs_key_shapes
-
-    def __len__(self):
-        return len(self.sequence_data)
-
-    def __getitem__(self, idx):
-        res = self.sequence_data[idx]
-        for k in res['obs'].keys():
-            dim = self.obs_key_shapes[k] if not isinstance(self.obs_key_shapes[k], list) else np.prod(np.array(self.obs_key_shapes[k]))
-            if res['obs'][k].shape[1]<dim:
-                res['obs'][k] = np.hstack([res['obs'][k], np.zeros((res['obs'][k].shape[0], dim-res['obs'][k].shape[1]))])
-        return res
-
-obs_key_shapes = OrderedDict([('object', [28]), ('robot0_eef_pos', [3]), ('robot0_eef_quat', [4]), ('robot0_gripper_qpos', [6])])
-trains = [ObsPaddingDataset(Float32Converter(SequenceDataset(**create_config(*pi))), obs_key_shapes) for pi in train_paras]
-vals = [ObsPaddingDataset(Float32Converter(SequenceDataset(**create_config(*pi))), obs_key_shapes) for pi in val_paras]
-# train_data = trains
-train_data = [tud.ConcatDataset([ti,vi]) for ti,vi in zip(trains, vals)]
-# xx = [t[0] for t in trains]
-def get_model():
-    algo_config_rnn = Config(**{
-            "enabled": True,
-            "horizon": 10,
-            "hidden_dim": 400,
-            "rnn_type": "LSTM",
-            "num_layers": 2,
-            "open_loop": False,
-            "kwargs": {
-                "bidirectional": False
-            }
-    })
-    ac_dim = 7
-    obs_key_shapes = OrderedDict([('object', [28]), ('robot0_eef_pos', [3]), ('robot0_eef_quat', [4]), ('robot0_gripper_qpos', [6])])
-    obs_config = Config(**{
-        "modalities": {
-            "obs": {
-                "low_dim": [
-                    "object",
-                    "robot0_eef_pos",
-                    "robot0_eef_quat",
-                    "robot0_gripper_qpos",
-                ],
-                "rgb": [],
-                "depth": [],
-                "scan": []
-            },
-            "goal": {
-                "low_dim": [],
-                "rgb": [],
-                "depth": [],
-                "scan": []
-            }
-        },
-        "encoder": {
+BCRNN_ENCODER_CONFIG = {
             "low_dim": {
                 "core_class": None,
                 "core_kwargs": {},
@@ -154,10 +51,8 @@ def get_model():
                 "obs_randomizer_kwargs": {}
             }
         }
-    })
-    return Model(obs_config, obs_key_shapes, ac_dim, algo_config_rnn)
 
-class Model(nn.Module):
+class BCRNN(nn.Module):
     def __init__(self, obs_config, obs_key_shape, ac_dim, algo_config_rnn, actor_layer_dims=[], obs_normalization_stats=None):
         super().__init__()
         self.obs_config = obs_config
@@ -250,11 +145,6 @@ class Model(nn.Module):
             obs (dict): single observation dictionary from environment (no batch dimension,
                 and np.array values for each key)
         """
-        for k in obs:
-            if k not in self.obs_key_shape: continue
-            dim = self.obs_key_shapes[k] if not isinstance(self.obs_key_shapes[k], list) else np.prod(np.array(self.obs_key_shapes[k]))
-            if obs[k].shape[0]<dim:
-                obs[k] = np.concatenate([obs[k], np.zeros(dim-obs[k].shape[0])])
         obs = TensorUtils.to_tensor(obs)
         obs = TensorUtils.to_batch(obs)
         obs = TensorUtils.to_device(obs, device)
@@ -352,76 +242,3 @@ class Model(nn.Module):
                     recurse_helper(d[k])
         recurse_helper(batch)
         return batch
-
-def dict_to_device(d, device):
-    for k,v in d.items():
-        if isinstance(v, torch.Tensor):
-            d[k] = v.to(device)
-        elif isinstance(v, dict):
-            dict_to_device(v, device)
-        else:
-            continue
-    return d
-
-def data_to_device(batch_data, device):
-    batch_data = dict_to_device(batch_data, device)
-    return batch_data
-
-def loss_func(predictions, batch):
-    """
-    Internal helper function for BC algo class. Compute losses based on
-    network outputs in @predictions dict, using reference labels in @batch.
-
-    Args:
-        predictions (dict): dictionary containing network outputs, from @_forward_training
-        batch (dict): dictionary with torch.Tensors sampled
-            from a data loader and filtered by @process_batch_for_training
-
-    Returns:
-        losses (dict): dictionary of losses computed over the batch
-    """
-    losses = OrderedDict()
-    a_target = batch["actions"]
-    actions = predictions["actions"]
-    losses["loss"] = nn.MSELoss()(actions, a_target)
-    # losses["l1_loss"] = nn.SmoothL1Loss()(actions, a_target)
-    # cosine direction loss on eef delta position
-    # losses["cos_loss"] = LossUtils.cosine_loss(actions[..., :3], a_target[..., :3])
-    # action_losses = [
-    #     losses["l2_loss"],
-    #     # 0.0*losses["l1_loss"],
-    #     # 0.0*losses["cos_loss"],
-    # ]
-    # action_loss = sum(action_losses)
-    # losses["action_loss"] = action_loss
-    return losses
-
-def compute_loss(model, batch_data, device):
-    input_batch = data_to_device(batch_data, device)
-    predictions = model(input_batch)
-    if isinstance(predictions, dict):
-        losses = loss_func(predictions, input_batch)
-    else:
-        losses = {'loss': predictions}
-    return losses
-
-def eval(model, data_loader, device):
-    total_losses = defaultdict(float)
-    for batch in data_loader:
-        batch = data_to_device(batch, device)
-        batch_losses = compute_loss(model, batch, device)
-        for k, v in batch_losses.items():
-            total_losses[k] += v.item()/len(data_loader)
-    return total_losses
-
-if __name__=='__main__':
-    model = get_model().to("cuda")
-    optimizer = Adam(model.parameters(), lr=0.01)
-    optimizer.zero_grad()
-    condata = tud.ConcatDataset(trains)
-    loader = tud.DataLoader(condata, batch_size=64, shuffle=True, drop_last=True)
-    batch = next(iter(loader))
-    loss = compute_loss(model, batch, "cuda")['loss']
-    loss.backward()
-    optimizer.step()
-
