@@ -6,11 +6,13 @@ class Server(fedavg.Server):
     def pack(self, client_id, mtype=0, *args, **kwargs):
         return {'model': self.model}
 
+    def iterate(self):
+        self.clients[0].train(self.model)
+
 class Client(fedavg.Client):
     def initialize(self, *args, **kwargs):
         self.all_steps = 0
-        self.model = self.server.model
-        self.optimizer = self.calculator.get_optimizer(self.model, lr=self.learning_rate, weight_decay=self.weight_decay, momentum=self.momentum)
+        self.optimizer = self.calculator.get_optimizer(self.server.model, lr=self.learning_rate, weight_decay=self.weight_decay, momentum=self.momentum)
 
     @fmodule.with_multi_gpus
     def train(self, model):

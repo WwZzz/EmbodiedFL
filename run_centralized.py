@@ -15,8 +15,8 @@ class Centralized(BasicDecorator):
     def __call__(self, runner, *args, **kwargs):
         all_train_data = tud.ConcatDataset([c.train_data for c in runner.clients])
         all_val_data = tud.ConcatDataset([c.val_data for c in runner.clients]) if runner.clients[0].val_data is not None and len(runner.clients[0].val_data) > 0 else None
-        runner.clients.set_data(all_train_data, 'train')
-        runner.clients.set_data(all_val_data, 'val')
+        runner.clients[0].set_data(all_train_data, 'train')
+        runner.clients[0].set_data(all_val_data, 'val')
         runner.reset_clients([runner.clients[0]])
         runner.gv.logger.clients = [runner.clients[0]]
         self.register_runner(runner)
