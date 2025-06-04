@@ -63,11 +63,11 @@ pip install mujoco==2.3.2 mujoco-python-viewer
 
 
 ### Algorithm
-| Name        | Desc                                                  |
-|-------------|-------------------------------------------------------|
-| Local       | each client trains their models locally without FL    |
-| Centralized | Ideal case where all the clients' data is centralized |
-| Fedavg      | standard FL procedure                                 |
+| Name            | Desc                                                  |
+|-----------------|-------------------------------------------------------|
+| **Local**       | each client trains their models locally without FL    |
+| **Centralized** | ideal case where all the clients' data is centralized |
+| **Fedavg**      | standard FL procedure                                 |
 
 
 
