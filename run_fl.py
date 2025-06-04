@@ -76,5 +76,6 @@ if __name__=='__main__':
             continue
     if algo is None: raise ModuleNotFoundError("{} was not found".format(algo))
     # Run
+    config['load_mode'] = "mmap"
     runner = flgo.init(task, algo, option=config, Logger=MyLogger)
     runner.run()

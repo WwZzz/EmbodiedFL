@@ -36,7 +36,7 @@ def create_config(data_path, filter_by_attribute):
         'pad_seq_length': True,
         'get_pad_mask': False,
         'goal_mode': None,
-        'hdf5_cache_mode': 'all',
+        'hdf5_cache_mode': None,
         'hdf5_use_swmr': True,
         'hdf5_normalize_obs': False,
         'filter_by_attribute': filter_by_attribute,
