@@ -16,6 +16,7 @@ import numpy as np
 from collections import defaultdict
 import json
 from tianshou.env import SubprocVectorEnv
+import robomimic.utils.obs_utils as ObsUtils
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--env_name', help='the task config path', type=str)
@@ -38,18 +39,24 @@ args = parser.parse_args()
 def load_env_meta(env_name, robot_name):
     return ALL_ENV_CONFIGS[env_name][robot_name]
 
-def process_results(results):
-    l = defaultdict(list)
-    for ri in results:
-        for k in ri.keys():
-            l[k].append(ri[k])
+def process_results(results, batched=False):
+    if batched:
+        l = defaultdict(list)
+        for ri in results:
+            for k in ri.keys():
+                l[k].extend(ri[k].tolist())
+    else:
+        l = defaultdict(list)
+        for ri in results:
+            for k in ri.keys():
+                l[k].append(ri[k])
     mean_reward = np.array(l['reward']).mean().astype(np.float32)
     success_rate = np.array(l['success_rate']).astype(np.float32).sum()/len(results) * 100
     mean_horizon = np.mean(l['horizon']).astype(np.float32)
     return {'reward': mean_reward.item(), 'success_rate': success_rate.item(), 'horizon': mean_horizon.item()}
 
 def create_env(env_meta, env_name, render=False, render_offscreen=False, use_image_obs=True):
-    return EnvUtils.create_env_from_metadata(
+    env = EnvUtils.create_env_from_metadata(
         env_meta=env_meta,
         env_name=env_name,
         render=render,
@@ -57,6 +64,16 @@ def create_env(env_meta, env_name, render=False, render_offscreen=False, use_ima
         use_image_obs=use_image_obs,
         use_depth_obs=False,
     )
+    modalities = {
+        'obs':{
+            "low_dim": [x for x in env.base_env.observation_names if 'image' not in x and 'depth' not in x],
+            "rgb": [x for x in env.base_env.observation_names if 'image' in x],
+            "depth": [x for x in env.base_env.observation_names if 'depth' in x],
+            "scan": [],
+        }
+    }
+    ObsUtils.initialize_obs_utils_with_obs_specs(modalities)
+    return env
 
 if __name__ == "__main__":
     setup_seed(args.seed)
@@ -64,7 +81,7 @@ if __name__ == "__main__":
     env_name = args.env_name
     env_meta = load_env_meta(env_name, args.robot)
     if args.num_envs > 0:
-        env_list = [create_env(env_meta, env_name, False, args.render_offscreen) for _ in range(args.num_envs)]
+        env_list = [lambda env_i=i: create_env(env_meta, env_name, False, args.render_offscreen) for i in range(args.num_envs)]
         env = SubprocVectorEnv(env_list)
     else:
         env = create_env(env_meta, env_name, args.render, args.render_offscreen)
@@ -82,15 +99,15 @@ if __name__ == "__main__":
             video_writer = imageio.get_writer(video_path, fps=20)
         else:
             video_writer = None
-        for _ in tqdm(range(args.num_episodes)):
+        for _ in tqdm(range(0, args.num_episodes, args.num_envs if args.num_envs > 0 else 1)):
             result = run_rollout(model.model, env, render=args.render, horizon=args.horizon, video_writer=video_writer)
             all_results.append(result)
         if video_writer is not None: video_writer.close()
-        final_results = process_results(all_results)
+        final_results = process_results(all_results, batched=args.num_envs>0)
         final_results['task'] = args.task
         final_results['env_name'] = env_name
         final_results['num_episodes'] = args.num_episodes
-        final_results['horizon'] = args.horizon
+        final_results['initial_horizon'] = args.horizon
         final_results['ckpt'] = args.ckpt
         final_results['round'] = os.path.split(args.ckpt)[-1].split('.')[-1]
         print(final_results)
@@ -122,15 +139,15 @@ if __name__ == "__main__":
                     video_writer = imageio.get_writer(video_path, fps=20)
                 else:
                     video_writer = None
-                for _ in tqdm(range(args.num_episodes), leave=False):
+                for _ in tqdm(range(0, args.num_episodes, args.num_envs if args.num_envs > 0 else 1), leave=False):
                     result = run_rollout(model.model, env, render=args.render, horizon=args.horizon, video_writer=video_writer)
                     ckpt_results.append(result)
                 if video_writer is not None: video_writer.close()
-                crt_results = process_results(ckpt_results)
+                crt_results = process_results(ckpt_results, batched=args.num_envs>0)
                 crt_results['task'] = args.task
                 crt_results['env_name'] = env_name
                 crt_results['num_episodes'] = args.num_episodes
-                crt_results['horizon'] = args.horizon
+                # crt_results['horizon'] = args.horizon
                 crt_results['ckpt'] = ckpt
                 crt_results['round'] = os.path.split(ckpt)[-1].split('.')[-1]
                 all_results.append(crt_results)

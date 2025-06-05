@@ -137,7 +137,7 @@ class BCRNN(nn.Module):
         return TensorUtils.to_float(input_batch)
         # return TensorUtils.to_float(TensorUtils.to_device(input_batch, self.device))
 
-    def _prepare_observation(self, obs, device):
+    def _prepare_observation(self, obs, device, batched=False):
         """
         Prepare raw observation dict from environment for policy.
 
@@ -146,7 +146,7 @@ class BCRNN(nn.Module):
                 and np.array values for each key)
         """
         obs = TensorUtils.to_tensor(obs)
-        obs = TensorUtils.to_batch(obs)
+        if not batched: obs = TensorUtils.to_batch(obs)
         obs = TensorUtils.to_device(obs, device)
         obs = TensorUtils.to_float(obs)
         if self.obs_normalization_stats is not None:
@@ -161,7 +161,7 @@ class BCRNN(nn.Module):
             obs = OrderedDict({k: obs[k] for k in self.all_obs_keys})
         return obs
 
-    def get_action(self, obs_dict, goal_dict=None, device='cuda'):
+    def get_action(self, obs_dict, goal_dict=None, device='cuda', batched=False):
         """
         Get policy action outputs.
 
@@ -172,7 +172,7 @@ class BCRNN(nn.Module):
         Returns:
             action (torch.Tensor): action tensor
         """
-        obs_dict = self._prepare_observation(obs_dict, device)
+        obs_dict = self._prepare_observation(obs_dict, device, batched=batched)
         assert not self.nets.training
         if self._rnn_hidden_state is None or self._rnn_counter % self._rnn_horizon == 0:
             batch_size = list(obs_dict.values())[0].shape[0]
