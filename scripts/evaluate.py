@@ -15,7 +15,10 @@ import argparse
 import numpy as np
 from collections import defaultdict
 import json
-from tianshou.env import SubprocVectorEnv
+try:
+    from tianshou.env import SubprocVectorEnv
+except ImportError:
+    SubprocVectorEnv = None
 import robomimic.utils.obs_utils as ObsUtils
 
 parser = argparse.ArgumentParser()
