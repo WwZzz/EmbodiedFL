@@ -1,0 +1,9 @@
+torch
+flgo>=0.4.4
+robosuite==1.5.1
+robomimic==0.4.0 # need to be modified
+mimicgen
+robosuite-task-zoo
+tianshou==0.2.0
+mujoco==2.3.2
+mujoco-python-viewer
