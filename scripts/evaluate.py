@@ -54,7 +54,7 @@ def process_results(results, batched=False):
             for k in ri.keys():
                 l[k].append(ri[k])
     mean_reward = np.array(l['reward']).mean().astype(np.float32)
-    success_rate = np.array(l['success_rate']).astype(np.float32).sum()/len(results) * 100
+    success_rate = np.array(l['success_rate']).astype(np.float32).mean() * 100
     mean_horizon = np.mean(l['horizon']).astype(np.float32)
     return {'reward': mean_reward.item(), 'success_rate': success_rate.item(), 'horizon': mean_horizon.item()}
 
